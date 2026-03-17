@@ -1,9 +1,12 @@
     <!DOCTYPE html>
     <html lang="id" class="antialiased">
     <head>
+        <meta name="theme-color" content="#3b82f6">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1157/1157044.png">
+    <link rel="manifest" id="dynamic-manifest">
         <meta charset="UTF-8">
        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-        
+       
         <!-- Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3027,7 +3030,58 @@
 
             };
             
+            /**
+         * ==========================================
+         * MODULE 10: SINGLE-FILE PWA HACK
+         * ==========================================
+         */
+        const setupSingleFilePWA = () => {
+            // 1. Buat Manifest JSON secara dinamis
+            const manifestJSON = {
+                "name": "LifeTracker Pro",
+                "short_name": "TrackerPro",
+                "description": "Aplikasi pelacak waktu dan keuangan gamifikasi.",
+                "start_url": window.location.href.split('?')[0], // Menggunakan URL saat ini
+                "display": "standalone",
+                "background_color": "#0f172a",
+                "theme_color": "#3b82f6",
+                "icons": [
+                    {
+                        "src": "https://cdn-icons-png.flaticon.com/512/1157/1157044.png",
+                        "sizes": "512x512",
+                        "type": "image/png",
+                        "purpose": "any maskable"
+                    }
+                ]
+            };
+            
+            // Ubah JSON jadi file Blob dan tempelkan ke tag <link> di head
+            const manifestBlob = new Blob([JSON.stringify(manifestJSON)], { type: 'application/json' });
+            document.getElementById('dynamic-manifest').href = URL.createObjectURL(manifestBlob);
 
+            // 2. Buat Service Worker secara dinamis
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    self.addEventListener('install', e => self.skipWaiting());
+                    self.addEventListener('activate', e => self.clients.claim());
+                    self.addEventListener('fetch', e => {
+                        e.respondWith(fetch(e.request).catch(() => new Response('LifeTracker Offline Mode')));
+                    });
+                `;
+                
+                // Ubah teks JS jadi file Blob Service Worker
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+                
+                // Daftarkan Service Worker virtual
+                navigator.serviceWorker.register(swUrl)
+                    .then(() => console.log('Single-file PWA Service Worker Ready!'))
+                    .catch(err => console.error('PWA SW Error:', err));
+            }
+        };
+
+        // Jalankan pembuat PWA virtual
+        setupSingleFilePWA();
             /**
              * ==========================================
              * BOOTSTRAP

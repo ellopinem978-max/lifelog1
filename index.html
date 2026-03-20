@@ -158,6 +158,33 @@
         [data-theme="neon"] .bg-slate-50 { background-color: #000000 !important; border-color: #27272a !important; }
         [data-theme="neon"] aside, [data-theme="neon"] header, [data-theme="neon"] nav { background-color: #09090b !important; border-color: #27272a !important; box-shadow: 0 0 15px rgba(236, 72, 153, 0.2) !important; }
         [data-theme="neon"] input, [data-theme="neon"] select { background-color: #000000 !important; color: #10b981 !important; border-color: #27272a !important; box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.1) !important; }
+
+        /* --- TAMBAHAN TEMA BARU --- */
+            
+            /* Tema 1: RPG / GAME (Pixelated, Gelap, Neon) */
+            [data-theme="game"] body { background-color: #09090b; color: #10b981; font-family: 'Courier New', Courier, monospace !important; }
+            [data-theme="game"] .bg-white { background-color: #18181b !important; border: 2px solid #3f6212 !important; box-shadow: 4px 4px 0px #166534 !important; border-radius: 8px !important; }
+            [data-theme="game"] .text-slate-800, [data-theme="game"] h1, [data-theme="game"] h2, [data-theme="game"] h3 { color: #4ade80 !important; text-transform: uppercase; text-shadow: 2px 2px 0px #064e3b; }
+            [data-theme="game"] .text-slate-500 { color: #a1a1aa !important; }
+            [data-theme="game"] input, [data-theme="game"] select { background-color: #000 !important; color: #10b981 !important; border: 2px solid #3f6212 !important; border-radius: 4px !important; }
+            [data-theme="game"] .rounded-3xl { border-radius: 12px !important; }
+
+            /* Tema 2: Wanita (Elegant, Soft Pink, Floral) */
+            [data-theme="wanita"] body { background-color: #fdf2f8; color: #831843; }
+            [data-theme="wanita"] .bg-white { background-color: rgba(255, 255, 255, 0.8) !important; border-color: #fbcfe8 !important; backdrop-filter: blur(10px); }
+            [data-theme="wanita"] .text-slate-800, [data-theme="wanita"] h1, [data-theme="wanita"] h2, [data-theme="wanita"] h3 { color: #9d174d !important; }
+            [data-theme="wanita"] .text-slate-500 { color: #db2777 !important; }
+            [data-theme="wanita"] .bg-slate-50 { background-color: #fce7f3 !important; }
+            [data-theme="wanita"] .bg-brand-100 { background-color: #fbcfe8 !important; color: #be185d !important; }
+            [data-theme="wanita"] input:focus, [data-theme="wanita"] select:focus { border-color: #f472b6 !important; box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.2) !important;}
+
+            /* Tema 3: Pria (Maskulin, Slate, Sharp) */
+            [data-theme="pria"] body { background-color: #e2e8f0; color: #0f172a; }
+            [data-theme="pria"] .bg-white { background-color: #ffffff !important; border-color: #cbd5e1 !important; border-radius: 8px !important; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.1) !important; }
+            [data-theme="pria"] .text-slate-800 { color: #0f172a !important; }
+            [data-theme="pria"] .rounded-3xl { border-radius: 8px !important; }
+            [data-theme="pria"] button { border-radius: 4px !important; }
+            [data-theme="pria"] .bg-gradient-to-br { background: #1e293b !important; } /* Buat card jadi warna solid dark */
         </style>
     </head>
     <body class="text-slate-800 flex flex-col lg:flex-row min-h-screen">
@@ -343,15 +370,39 @@
                 { id: 'm-7', name: 'Lain-lain', emoji: '📦', color: 'from-slate-400 to-slate-600' },
             ];
 
+            // --- GANTI DEFAULT_TIME_CATEGORIES DENGAN INI ---
             const DEFAULT_TIME_CATEGORIES = [
-                { id: 't-1', name: 'Bekerja', emoji: '💻', color: 'from-indigo-500 to-indigo-700', meta: 'produktif' },
-                { id: 't-2', name: 'Belajar', emoji: '📚', color: 'from-cyan-400 to-cyan-600', meta: 'produktif' },
-                { id: 't-3', name: 'Olahraga', emoji: '🏃', color: 'from-lime-400 to-lime-600', meta: 'kesehatan' },
-                { id: 't-4', name: 'Sosial / Keluarga', emoji: '🗣️', color: 'from-teal-400 to-teal-600', meta: 'sosial' },
-                { id: 't-5', name: 'Hiburan / Game', emoji: '🎮', color: 'from-rose-400 to-rose-600', meta: 'hiburan' },
-                { id: 't-6', name: 'Tidur / Istirahat', emoji: '😴', color: 'from-slate-400 to-slate-600', meta: 'kesehatan' },
-                { id: 't-7', name: 'Urusan Rumah', emoji: '🧹', color: 'from-amber-400 to-amber-600', meta: 'produktif' },
+                { id: 't-1', name: 'Sleep', emoji: '🛌', color: 'from-indigo-500 to-blue-600', meta: 'sleep' },
+                { id: 't-2', name: 'Work / Study', emoji: '💻', color: 'from-blue-500 to-indigo-600', meta: 'work_study' },
+                { id: 't-3', name: 'Exercise / Physical', emoji: '🏃', color: 'from-emerald-400 to-teal-500', meta: 'exercise' },
+                { id: 't-4', name: 'Social', emoji: '👥', color: 'from-amber-400 to-orange-500', meta: 'social' },
+                { id: 't-5', name: 'Entertainment Passive', emoji: '📱', color: 'from-red-500 to-rose-600', meta: 'ent_passive' },
+                { id: 't-6', name: 'Entertainment Interactive', emoji: '🎮', color: 'from-purple-500 to-fuchsia-600', meta: 'ent_interactive' },
+                { id: 't-7', name: 'Personal Care / Daily Needs', emoji: '🚿', color: 'from-cyan-400 to-blue-400', meta: 'personal_care' },
+                { id: 't-8', name: 'Errands / Commute / Misc', emoji: '🚗', color: 'from-slate-400 to-gray-500', meta: 'errands' }
             ];
+
+            // --- TAMBAHKAN TABEL BASE EFFECT INI ---
+            const BASE_EFFECTS = {
+                'sleep': { focus: 1, discipline: 1, growth: 0, health: 2, social: 0, balance: 1 },
+                'work_study': { focus: 2, discipline: 2, growth: 2, health: 0, social: 0, balance: 0 },
+                'exercise': { focus: 1, discipline: 1, growth: 0, health: 2, social: 0, balance: 1 },
+                'social': { focus: 0, discipline: 0, growth: 0, health: 0, social: 2, balance: 1 },
+                'ent_passive': { focus: -2, discipline: -1, growth: 0, health: -1, social: 0, balance: -1 },
+                'ent_interactive': { focus: -1, discipline: -1, growth: 0, health: 0, social: 0, balance: -1 },
+                'personal_care': { focus: 0, discipline: 0, growth: 0, health: 1, social: 0, balance: 1 },
+                'errands': { focus: 0, discipline: 0, growth: 0, health: 0, social: 0, balance: 0 }
+            };
+                        // ... KODE LAMA (tepat di bawah DEFAULT_TIME_CATEGORIES)
+            const STATS_CONFIG = {
+                focus: { name: 'Focus', icon: 'crosshairs', colorClass: 'text-violet-500', bgClass: 'bg-violet-500', hex: '#8b5cf6', desc: 'Konsentrasi tugas bernilai.' },
+                discipline: { name: 'Discipline', icon: 'shield-half', colorClass: 'text-blue-500', bgClass: 'bg-blue-500', hex: '#3b82f6', desc: 'Kontrol diri dan konsistensi.' },
+                growth: { name: 'Growth', icon: 'sprout', colorClass: 'text-emerald-500', bgClass: 'bg-emerald-500', hex: '#10b981', desc: 'Perkembangan skill.' },
+                health: { name: 'Health', icon: 'heart-pulse', colorClass: 'text-red-500', bgClass: 'bg-red-500', hex: '#ef4444', desc: 'Kondisi fisik (tidur/gerak).' },
+                social: { name: 'Social', icon: 'users', colorClass: 'text-amber-500', bgClass: 'bg-amber-500', hex: '#f59e0b', desc: 'Keterhubungan sosial.' },
+                balance: { name: 'Balance', icon: 'scale', colorClass: 'text-teal-500', bgClass: 'bg-teal-500', hex: '#14b8a6', desc: 'Keseimbangan hidup.' }
+            };
+            const BASE_EXP_PER_LEVEL = 100;
 
             // Expanded 20 Badges for Deep Gamification
             const BADGES_DB = [
@@ -414,7 +465,15 @@
                     unlockedBadges: [],
                     hasSeenTutorial: false,
                     currentLevel: 1,
-                    theme: 'light'
+                    theme: 'light',
+                    characterStats: {
+                    focus: { level: 1, exp: 0 },
+                    discipline: { level: 1, exp: 0 },
+                    growth: { level: 1, exp: 0 },
+                    health: { level: 1, exp: 0 },
+                    social: { level: 1, exp: 0 },
+                    balance: { level: 1, exp: 0 },
+                    }
                 },
                 
                 // UI State
@@ -644,26 +703,113 @@
              * ==========================================
              */
             const GameEngine = {
+               // --- MASUKKAN DI DALAM GameEngine ---
+            processActivityImpact: (activity) => {
+                const cat = Utils.getCategoryObj(activity.categoryId, 'time');
+                const meta = cat.meta || 'errands'; 
+                const base = BASE_EFFECTS[meta] || BASE_EFFECTS['errands'];
                 
+                // 1. Durasi Multiplier
+                const durHours = activity.duration / 60;
+                let durMult = 1.0;
+                if (durHours < 0.5) durMult = 0.5;
+                else if (durHours > 2 && durHours <= 4) durMult = 1.5;
+                else if (durHours > 4) durMult = 2.0;
+
+                // 2. Deteksi Konteks Waktu
+                const hour = parseInt(activity.startTime.split(':')[0]);
+                const isPagiProduktif = hour >= 6 && hour < 11;
+                const isSiang = hour >= 11 && hour < 17;
+                const isMalam = hour >= 17 && hour < 22;
+                const isLarutMalam = hour >= 22 || hour < 5;
+
+                // 3. Terapkan Time Multiplier ke Stat Spesifik
+                let finalDeltas = { ...base };
+
+                if (meta === 'ent_passive' && isPagiProduktif) {
+                    finalDeltas.focus *= 1.5;
+                    finalDeltas.discipline *= 1.5;
+                }
+                if ((meta === 'ent_passive' || meta === 'ent_interactive') && isLarutMalam) {
+                    finalDeltas.health = (finalDeltas.health === 0 ? -1 : finalDeltas.health) * 1.5; 
+                    finalDeltas.discipline *= 1.2;
+                }
+                if (meta === 'work_study' && (isPagiProduktif || isSiang)) {
+                    finalDeltas.focus *= 1.2;
+                    finalDeltas.growth *= 1.2;
+                }
+
+                // 4. Kalkulasi Final (Base * DurMult * TimeMult)
+                for (let stat in finalDeltas) {
+                    finalDeltas[stat] = finalDeltas[stat] * durMult;
+                }
+
+                return finalDeltas;
+            },
+
+    applyDeltasToStats: async (deltas) => {
+        let stats = AppState.settings.characterStats;
+        let leveledUp = [];
+        let leveledDown = [];
+
+        for (let stat in deltas) {
+            let change = Math.round(deltas[stat]);
+            if (change === 0) continue;
+
+            let currentLevel = stats[stat].level || 1;
+            let currentExp = (stats[stat].exp || 0) + change;
+
+            while (currentExp >= BASE_EXP_PER_LEVEL) {
+                currentLevel++;
+                currentExp -= BASE_EXP_PER_LEVEL;
+                leveledUp.push(STATS_CONFIG[stat].name);
+            }
+            while (currentExp < 0 && currentLevel > 1) {
+                currentLevel--;
+                currentExp += BASE_EXP_PER_LEVEL;
+                leveledDown.push(STATS_CONFIG[stat].name);
+            }
+            if (currentLevel === 1 && currentExp < 0) currentExp = 0;
+
+            stats[stat].level = currentLevel;
+            stats[stat].exp = currentExp;
+        }
+
+        await App.updateSetting('characterStats', stats);
+
+        if (leveledUp.length > 0) UIEngine.showToast(`Stat Level Up: ${leveledUp.join(', ')} 🔼`, 'info', '✨');
+        if (leveledDown.length > 0) UIEngine.showToast(`Stat Menurun: ${leveledDown.join(', ')} 🔽`, 'error', '⚠️');
+    },
                 getStats: () => {
-                    // Calculate XP
-                    // Base Action: 5 XP per data
-                    const expXP = AppState.expenses.length * 5;
-                    const actXP = AppState.activities.length * 5;
-                    const streakXP = AppState.settings.totalStreakXP || 0;
-                    
-                    const totalXP = expXP + actXP + streakXP;
-                    
-                    // Exponential Leveling Formula
-                    // Lv 1: 0-39, Lv 2: 40-89, Lv 3: 90-159...
-                    const level = Math.floor(Math.sqrt(totalXP / 10)) + 1; 
-                    
-                    const currentBaseXP = 10 * Math.pow(level - 1, 2);
-                    const nextBaseXP = 10 * Math.pow(level, 2);
-                    
-                    const progress = totalXP - currentBaseXP;
-                    const needed = nextBaseXP - currentBaseXP;
-                    const pct = Math.min((progress / needed) * 100, 100);
+        // --- LOGIKA BARU: Level Dihitung dari Akumulasi Kekuatan 6 Stat Karakter ---
+        let totalStatXP = 0;
+        const statsObj = AppState.settings.characterStats || {};
+        
+        Object.keys(STATS_CONFIG).forEach(key => {
+            const stat = statsObj[key] || { level: 1, exp: 0 };
+            // Setiap level di stat bernilai 100 XP + sisa exp yang ada
+            totalStatXP += ((stat.level - 1) * BASE_EXP_PER_LEVEL) + stat.exp;
+        });
+
+        // XP Bonus dari fitur lain (Biar mencatat uang tetap dihargai)
+        const moneyBonusXP = AppState.expenses.length * 2; 
+        const streakXP = AppState.settings.totalStreakXP || 0;
+        
+        // TOTAL XP SEKARANG
+        const totalXP = totalStatXP + moneyBonusXP + streakXP;
+        
+        // Exponential Leveling Formula (Tetap sama)
+        const level = Math.floor(Math.sqrt(totalXP / 10)) + 1; 
+        
+        const currentBaseXP = 10 * Math.pow(level - 1, 2);
+        const nextBaseXP = 10 * Math.pow(level, 2);
+        
+        const progress = totalXP - currentBaseXP;
+        const needed = nextBaseXP - currentBaseXP;
+        const pct = Math.min((progress / needed) * 100, 100);
+
+        // ... Lanjutan kode title/gelar (Warga Biasa, dll) biarkan sama persis ...
+        // ... (Sampai akhir return)
                     
                     const titles = [
                         "Warga Biasa", "Pemula Penghemat", "Tracker Pemula", 
@@ -827,6 +973,78 @@
                         }, 1500);
                     }
                 },
+                // ... akhir dari fungsi processDailyLogin ...
+
+    // --- FITUR BARU: EVALUASI MINGGUAN OTOMATIS ---
+    evaluateWeeklyPatterns: async () => {
+        const today = new Date();
+        const lastEval = AppState.settings.lastWeeklyEvalDate ? new Date(AppState.settings.lastWeeklyEvalDate) : null;
+        
+        // Cek apakah sudah 7 hari sejak evaluasi mingguan terakhir
+        if (!lastEval || (today - lastEval) / (1000 * 60 * 60 * 24) >= 7) {
+            
+            // Ambil data 7 hari terakhir
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            const cutoffDate = sevenDaysAgo.toISOString().split('T')[0];
+            
+            const weeklyActs = AppState.activities.filter(a => a.date >= cutoffDate);
+            
+            let workDur = 0;
+            let passiveDur = 0;
+            let physicalSess = 0;
+
+            weeklyActs.forEach(a => {
+                const cat = Utils.getCategoryObj(a.categoryId, 'time');
+                if (cat.meta === 'work_study') workDur += a.duration;
+                if (cat.meta === 'ent_passive') passiveDur += a.duration;
+                if (cat.meta === 'exercise') physicalSess++;
+            });
+
+            let deltas = { focus: 0, discipline: 0, growth: 0, health: 0, social: 0, balance: 0 };
+            let messages = [];
+
+            // ⚠️ ATURAN 1: Produktivitas (< 10 jam seminggu = Hukuman)
+            if (workDur < 600) {
+                deltas.growth -= 50;
+                deltas.focus -= 30;
+                messages.push("📉 Penalti Mingguan: Jam produktif sangat rendah! Growth & Focus menurun drastis.");
+            } else if (workDur > 1200) { // > 20 jam
+                deltas.growth += 50;
+                deltas.focus += 30;
+                messages.push("📈 Bonus Mingguan: Sangat produktif! Growth & Focus meningkat pesat.");
+            }
+
+            // ⚠️ ATURAN 2: Hiburan Pasif Berlebihan (> 14 jam seminggu = Hukuman)
+            if (passiveDur > 840) {
+                deltas.discipline -= 50;
+                deltas.balance -= 30;
+                messages.push("📉 Penalti Mingguan: Terlalu banyak waktu terbuang untuk Scroll/Sosmed! Discipline anjlok.");
+            }
+
+            // ⚠️ ATURAN 3: Olahraga
+            if (physicalSess < 2) {
+                deltas.health -= 40;
+                messages.push("📉 Penalti Mingguan: Kurang gerak minggu ini! Health memburuk.");
+            } else if (physicalSess >= 3) {
+                deltas.health += 40;
+                messages.push("📈 Bonus Mingguan: Rutin berolahraga! Health meningkat.");
+            }
+
+            // Eksekusi hukuman/bonus
+            if (Object.values(deltas).some(v => v !== 0)) {
+                await GameEngine.applyDeltasToStats(deltas);
+                // Munculkan notifikasi secara bergantian
+                messages.forEach((msg, i) => {
+                    setTimeout(() => UIEngine.showToast(msg, msg.includes("Penalti") ? 'error' : 'success', msg.includes("Penalti") ? '⚠️' : '🌟'), i * 2000);
+                });
+            }
+
+            // Update tanggal evaluasi agar tidak dihitung lagi besok
+            AppState.settings.lastWeeklyEvalDate = Utils.getToday();
+            await DBEngine.put('settings', { key: 'lastWeeklyEvalDate', value: AppState.settings.lastWeeklyEvalDate });
+        }
+    },
 
                 // Simple Confetti implementation via Canvas
                 triggerConfetti: () => {
@@ -1110,32 +1328,60 @@
                     }
 
                     // 2. Time Insight
+                    // --- GANTI BAGIAN // 2. Time Insight ---
                     if (activities.length > 0) {
                         const totalTime = activities.reduce((s, a) => s + a.duration, 0);
-                        const byCat = {};
-                        activities.forEach(a => byCat[a.categoryId] = (byCat[a.categoryId] || 0) + a.duration);
                         
-                        const sortedCat = Object.entries(byCat).sort((a,b) => b[1] - a[1]);
-                        const topCatId = sortedCat[0][0];
-                        const topCatDur = sortedCat[0][1];
-                        const topCat = Utils.getCategoryObj(topCatId, 'time');
-                        
-                        let judgment = "Terus pertahankan konsistensi!";
-                        if (topCat.meta === 'hiburan') judgment = "Mungkin ini saatnya untuk sedikit lebih fokus bekerja/belajar.";
-                        if (topCat.meta === 'produktif') judgment = "Sangat produktif! Jangan lupa istirahat yang cukup.";
+                        let passivePagiDur = 0;
+                        let lateNightScreenDur = 0;
+                        let workDur = 0;
+                        let physicalSess = 0;
 
-                        insights.push({
-                            type: 'time',
-                            icon: topCat.emoji,
-                            title: 'Fokus Utama',
-                            colorText: 'text-blue-600',
-                            bgBox: 'bg-blue-50 border-blue-100',
-                            desc: `Aktivitas dominan Anda adalah <strong>${topCat.name}</strong> (${Utils.formatDuration(topCatDur)}). ${judgment}`
+                        activities.forEach(a => {
+                            const cat = Utils.getCategoryObj(a.categoryId, 'time');
+                            const hour = parseInt((a.startTime || '00').split(':')[0]);
+                            const isPagi = hour >= 6 && hour < 11;
+                            const isLarut = hour >= 22 || hour < 5;
+
+                            if (cat.meta === 'ent_passive' && isPagi) passivePagiDur += a.duration;
+                            if ((cat.meta === 'ent_passive' || cat.meta === 'ent_interactive') && isLarut) lateNightScreenDur += a.duration;
+                            if (cat.meta === 'work_study') workDur += a.duration;
+                            if (cat.meta === 'exercise') physicalSess++;
                         });
-                    } else {
-                        insights.push({
-                            type: 'time', icon: '⏱️', title: 'Belum Ada Data Waktu', colorText: 'text-slate-400', bgBox: 'bg-slate-50 border-slate-100', desc: 'Catat aktivitas Anda untuk mengetahui pola kebiasaan.'
-                        });
+
+                        // Insight 1: Bahaya Pagi
+                        if (passivePagiDur > 120) { // Lebih dari 2 jam seminggu
+                            insights.push({
+                                type: 'time', icon: '🚨', title: 'Focus Menurun!', colorText: 'text-red-600', bgBox: 'bg-red-50 border-red-100',
+                                desc: `Penyebab Utama: Terdapat <strong>${Utils.formatDuration(passivePagiDur)} hiburan pasif</strong> di pagi produktif minggu ini.`
+                            });
+                        }
+
+                        // Insight 2: Evaluasi Health & Balance
+                        if (lateNightScreenDur > 180) { // Lebih dari 3 jam seminggu
+                            insights.push({
+                                type: 'time', icon: '🌙', title: 'Health Terancam', colorText: 'text-amber-600', bgBox: 'bg-amber-50 border-amber-100',
+                                desc: `Hiburan layar larut malam cukup tinggi (${Utils.formatDuration(lateNightScreenDur)}). Pola ini mengganggu pemulihan fisik.`
+                            });
+                        } else if (physicalSess >= 3) {
+                            insights.push({
+                                type: 'time', icon: '💪', title: 'Health Meningkat', colorText: 'text-emerald-600', bgBox: 'bg-emerald-50 border-emerald-100',
+                                desc: `Penyebab: Ada <strong>${physicalSess} sesi aktivitas fisik</strong> minggu ini. Pola tubuh jadi lebih stabil.`
+                            });
+                        }
+
+                        // Insight 3: Evaluasi Growth & Balance
+                        if (workDur < 180) { // Kurang dari 3 jam seminggu
+                            insights.push({
+                                type: 'time', icon: '⚖️', title: 'Balance / Growth Rendah', colorText: 'text-slate-600', bgBox: 'bg-slate-50 border-slate-100',
+                                desc: `Aktivitas bernilai (Work/Study) minim minggu ini. Waktu terlalu dominan di aktivitas pasif/rutinitas.`
+                            });
+                        } else {
+                            insights.push({
+                                type: 'time', icon: '📈', title: 'Growth Positif', colorText: 'text-blue-600', bgBox: 'bg-blue-50 border-blue-100',
+                                desc: `Konsistensi terjaga! Waktu Work/Study mencapai <strong>${Utils.formatDuration(workDur)}</strong> minggu ini.`
+                            });
+                        }
                     }
 
                     return insights;
@@ -1281,6 +1527,45 @@
                                             <span class="text-[10px] uppercase font-black text-slate-400 mt-1">Badges</span>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <!-- TAMBAHAN: 6 ATRIBUT KARAKTER RPG -->
+                            <div class="mb-8">
+                                <h3 class="font-black text-slate-800 mb-4 text-xl flex items-center gap-2">
+                                    <i data-lucide="dna" class="w-6 h-6 text-brand-500"></i> Atribut Karakter
+                                </h3>
+                                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                    ${Object.keys(STATS_CONFIG).map(statKey => {
+                                        const config = STATS_CONFIG[statKey];
+                                        const data = (AppState.settings.characterStats && AppState.settings.characterStats[statKey]) ? AppState.settings.characterStats[statKey] : {level:1, exp:0};
+                                        const percent = (data.exp / BASE_EXP_PER_LEVEL) * 100;
+                                        return `
+                                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-2 relative overflow-hidden">
+                                                <div class="flex justify-between items-center z-10">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-8 h-8 rounded-lg ${config.bgClass} text-white flex items-center justify-center shadow-sm">
+                                                            <i data-lucide="${config.icon}" class="w-4 h-4"></i>
+                                                        </div>
+                                                        <span class="font-bold text-slate-700 text-sm">${config.name}</span>
+                                                    </div>
+                                                    <span class="font-black ${config.colorClass}">Lv.${data.level}</span>
+                                                </div>
+                                                <div class="w-full bg-slate-100 rounded-full h-1.5 mt-1 z-10">
+                                                    <div class="${config.bgClass} h-1.5 rounded-full transition-all duration-1000" style="width: ${percent}%"></div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+
+                            <!-- TAMBAHAN: RADAR CHART -->
+                            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-6 md:p-8 mb-8">
+                                <h3 class="font-black text-slate-800 mb-6 text-lg flex items-center gap-2">
+                                    <i data-lucide="radar" class="w-5 h-5 text-indigo-500"></i> Analisis Keseimbangan Pola Hidup (Radar)
+                                </h3>
+                                <div class="h-64 md:h-80 w-full relative">
+                                    <canvas id="statRadarChart"></canvas>
                                 </div>
                             </div>
 
@@ -2228,10 +2513,13 @@
                                     <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Tampilan Tema (Theme)</label>
                                     <div class="relative">
                                         <i data-lucide="palette" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
-                                        <select onchange="App.changeTheme(this.value)" class="w-full bg-slate-50 border-2 border-slate-200 focus:border-brand-500 rounded-2xl p-4 pl-12 font-black text-slate-800 outline-none transition-all appearance-none cursor-pointer">
-                                            <option value="light" ${AppState.settings.theme === 'light' ? 'selected' : ''}>Terang (Clean Light)</option>
-                                            <option value="dark" ${AppState.settings.theme === 'dark' ? 'selected' : ''}>Gelap (Elegant Dark)</option>
-                                            <option value="neon" ${AppState.settings.theme === 'neon' ? 'selected' : ''}>Neon (Cyberpunk Mode)</option>
+                                       <select onchange="App.changeTheme(this.value)" class="w-full bg-slate-50 border-2 border-slate-200 focus:border-brand-500 rounded-2xl p-4 pl-12 font-black text-slate-800 outline-none transition-all appearance-none cursor-pointer">
+                                            <option value="light" ${AppState.settings.theme === 'light' ? 'selected' : ''}>Default (Bersih)</option>
+                                            <option value="dark" ${AppState.settings.theme === 'dark' ? 'selected' : ''}>Gelap (Dark Mode)</option>
+                                            <option value="game" ${AppState.settings.theme === 'game' ? 'selected' : ''}>RPG Game (Pixel 8-bit)</option>
+                                            <option value="wanita" ${AppState.settings.theme === 'wanita' ? 'selected' : ''}>Feminim (Soft Pink)</option>
+                                            <option value="pria" ${AppState.settings.theme === 'pria' ? 'selected' : ''}>Maskulin (Sharp Slate)</option>
+                                            <option value="neon" ${AppState.settings.theme === 'neon' ? 'selected' : ''}>Neon (Cyberpunk)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -2250,9 +2538,10 @@
                                 
                                 <form id="form-category" class="bg-slate-50 border border-slate-200 p-6 rounded-3xl mb-8">
                                     <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                        <div class="md:col-span-2">
+                                       
+                                      <div class="md:col-span-2">
                                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Tipe</label>
-                                            <select id="cat-type" class="w-full p-3.5 rounded-xl bg-white border border-slate-200 outline-none font-bold text-sm text-slate-700">
+                                            <select id="cat-type" onchange="document.getElementById('wrapper-cat-meta').classList.toggle('hidden', this.value === 'money')" class="w-full p-3.5 rounded-xl bg-white border border-slate-200 outline-none font-bold text-sm text-slate-700">
                                                 <option value="money">Uang</option>
                                                 <option value="time">Waktu</option>
                                             </select>
@@ -2267,14 +2556,17 @@
                                                 ${EMOJI_PALETTE.map(em => `<option value="${em}">${em}</option>`).join('')}
                                             </select>
                                         </div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Meta (Khusus Waktu)</label>
+                                        <div id="wrapper-cat-meta" class="md:col-span-2 hidden">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Meta (Waktu)</label>
                                             <select id="cat-meta" class="w-full p-3.5 rounded-xl bg-white border border-slate-200 outline-none text-xs font-bold text-slate-700">
-                                                <option value="produktif">Produktif</option>
-                                                <option value="kesehatan">Kesehatan</option>
-                                                <option value="hiburan">Hiburan</option>
-                                                <option value="sosial">Sosial</option>
-                                                <option value="lainnya">Lainnya</option>
+                                                <option value="sleep">Sleep (Tidur)</option>
+                                                <option value="work_study">Work / Study (Kerja)</option>
+                                                <option value="exercise">Exercise / Physical (Olahraga)</option>
+                                                <option value="social">Social (Sosial)</option>
+                                                <option value="ent_passive">Entertainment Passive (Scroll/Nonton)</option>
+                                                <option value="ent_interactive">Entertainment Interactive (Game)</option>
+                                                <option value="personal_care">Personal Care (Mandi/Makan)</option>
+                                                <option value="errands">Errands (Perjalanan/Lainnya)</option>
                                             </select>
                                         </div>
                                         <div class="md:col-span-3 flex items-end">
@@ -2361,6 +2653,8 @@
                         // Process Gamification Login
                         await GameEngine.processDailyLogin();
 
+                        await GameEngine.evaluateWeeklyPatterns();
+
                         await App.pruneOldData();
 
                         // Setel Tema
@@ -2410,111 +2704,192 @@
                     else if (AppState.activeTab === 'settings') html = Views.renderSettings();
 
                     content.innerHTML = html;
-                    lucide.createIcons({root: content});
+                   // ... (Bagian akhir fungsi App.render() di MODULE 9)
+                lucide.createIcons({root: content});
 
-                    // Post-render DOM manipulation (Animations)
-                    setTimeout(() => {
-                        const animatedElems = document.querySelectorAll('[data-anim-width]');
-                        animatedElems.forEach(el => {
-                            el.style.width = el.getAttribute('data-anim-width');
-                        });
-                    }, 50);
+                setTimeout(() => {
+                    const animatedElems = document.querySelectorAll('[data-anim-width]');
+                    animatedElems.forEach(el => { el.style.width = el.getAttribute('data-anim-width'); });
+
+                    // --- TAMBAHKAN RENDER RADAR CHART DI SINI ---
+                    if (AppState.activeTab === 'dashboard') {
+                        const radarCtx = document.getElementById('statRadarChart');
+                        if (radarCtx && AppState.settings.characterStats) {
+                            if (AppState.activeCharts['radarChart']) AppState.activeCharts['radarChart'].destroy();
+                            
+                            const labels = []; const dataPoints = [];
+                            Object.keys(STATS_CONFIG).forEach(key => {
+                                labels.push(STATS_CONFIG[key].name);
+                                const stat = AppState.settings.characterStats[key];
+                                dataPoints.push((stat.level * 10) + (stat.exp / 10)); // Skala visual
+                            });
+
+                            AppState.activeCharts['radarChart'] = new Chart(radarCtx, {
+                                type: 'radar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Status Karakter',
+                                        data: dataPoints,
+                                        backgroundColor: 'rgba(59, 130, 246, 0.2)', // brand-500
+                                        borderColor: '#3b82f6',
+                                        pointBackgroundColor: '#10b981', // emerald-500
+                                        borderWidth: 2,
+                                    }]
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false,
+                                    scales: {
+                                        r: { 
+                                            ticks: { display: false },
+                                            pointLabels: { font: { family: 'Nunito', size: 12, weight: 'bold' } }
+                                        }
+                                    },
+                                    plugins: { legend: { display: false } }
+                                }
+                            });
+                        }
+                    }
+                    // --- AKHIR TAMBAHAN RADAR CHART ---
+
+                }, 50);
 
                     // Attach Specific Form Listeners
                     App.attachFormListeners();
                 },
 
                attachFormListeners: () => {
-                const mForm = document.getElementById('form-money');
-                if (mForm) {
-                    mForm.onsubmit = async (e) => {
-                        e.preventDefault();
-                        const isNew = !AppState.editState.moneyId;
-                        const data = {
-                            id: AppState.editState.moneyId || Utils.generateId('exp'),
-                            amount: Number(document.getElementById('input-m-amt').value),
-                            categoryId: document.getElementById('input-m-cat').value,
-                            date: document.getElementById('input-m-date').value,
-                            note: document.getElementById('input-m-note').value
+                    // 1. FORM UANG
+                    const mForm = document.getElementById('form-money');
+                    if (mForm) {
+                        mForm.onsubmit = async (e) => {
+                            e.preventDefault();
+                            const isNew = !AppState.editState.moneyId;
+                            const data = {
+                                id: AppState.editState.moneyId || Utils.generateId('exp'),
+                                amount: Number(document.getElementById('input-m-amt').value),
+                                categoryId: document.getElementById('input-m-cat').value,
+                                date: document.getElementById('input-m-date').value,
+                                note: document.getElementById('input-m-note').value
+                            };
+                            
+                            const bpCheck = document.getElementById('input-m-bp');
+                            if (bpCheck && bpCheck.checked) {
+                                const bpName = document.getElementById('input-m-bp-name').value || data.note || 'Blueprint Keuangan';
+                                const blueprints = AppState.settings.blueprints || { money: [], time: [] };
+                                blueprints.money.push({ id: Utils.generateId('bpm'), title: bpName, amount: data.amount, categoryId: data.categoryId, note: data.note });
+                                await App.updateSetting('blueprints', blueprints);
+                            }
+
+                            await DBEngine.put('expenses', data);
+                            if (isNew) AppState.expenses.push(data);
+                            else {
+                                const idx = AppState.expenses.findIndex(x => x.id === data.id);
+                                if(idx !== -1) AppState.expenses[idx] = data;
+                            }
+                            AppState.expenses.sort((a,b) => new Date(b.date) - new Date(a.date));
+                            
+                            AppState.editState.moneyId = null;
+                            UIEngine.showToast(isNew ? "Pengeluaran sukses dicatat! +5 XP" : "Perubahan disimpan!", 'success', '💸');
+                            App.render();
                         };
-                        
-                        // --- LOGIKA SIMPAN BLUEPRINT KEUANGAN ---
-                        const bpCheck = document.getElementById('input-m-bp');
-                        if (bpCheck && bpCheck.checked) {
-                            const bpName = document.getElementById('input-m-bp-name').value || data.note || 'Blueprint Keuangan';
-                            const blueprints = AppState.settings.blueprints || { money: [], time: [] };
-                            blueprints.money.push({ id: Utils.generateId('bpm'), title: bpName, amount: data.amount, categoryId: data.categoryId, note: data.note });
-                            await App.updateSetting('blueprints', blueprints);
-                        }
+                    }
 
-                        await DBEngine.put('expenses', data);
-                        if (isNew) AppState.expenses.push(data);
-                        else {
-                            const idx = AppState.expenses.findIndex(x => x.id === data.id);
-                            if(idx !== -1) AppState.expenses[idx] = data;
-                        }
-                        AppState.expenses.sort((a,b) => new Date(b.date) - new Date(a.date));
-                        
-                        AppState.editState.moneyId = null;
-                        UIEngine.showToast(isNew ? "Pengeluaran sukses dicatat! +5 XP" : "Perubahan disimpan!", 'success', '💸');
-                        App.render();
-                    };
-                }
+                    // 2. FORM WAKTU
+                    const tForm = document.getElementById('form-time');
+                    if (tForm) {
+                        tForm.onsubmit = async (e) => {
+                            e.preventDefault();
+                            const isNew = !AppState.editState.timeId;
+                            
+                            const startTime = document.getElementById('input-t-start').value;
+                            const endTime = document.getElementById('input-t-end').value;
 
-                const tForm = document.getElementById('form-time');
-                if (tForm) {
-                    tForm.onsubmit = async (e) => {
-                        e.preventDefault();
-                        const isNew = !AppState.editState.timeId;
-                        
-                        const startTime = document.getElementById('input-t-start').value;
-                        const endTime = document.getElementById('input-t-end').value;
+                            if (endTime <= startTime) {
+                                UIEngine.showToast("Waktu selesai tidak boleh lebih awal atau sama dengan waktu mulai!", "error", "⚠️");
+                                return; 
+                            }
 
-                        // --- FIX: VALIDASI WAKTU MUNDUR ---
-                        if (endTime <= startTime) {
-                            UIEngine.showToast("Waktu selesai tidak boleh lebih awal atau sama dengan waktu mulai!", "error", "⚠️");
-                            return; // Hentikan proses simpan
-                        }
+                            let startD = new Date(`1970-01-01T${startTime}:00`);
+                            let endD = new Date(`1970-01-01T${endTime}:00`);
+                            const durationMins = Math.round((endD - startD) / 60000);
+                            const rawDate = document.getElementById('input-t-date').value;
 
-                        let startD = new Date(`1970-01-01T${startTime}:00`);
-                        let endD = new Date(`1970-01-01T${endTime}:00`);
-                        const durationMins = Math.round((endD - startD) / 60000);
-                        const rawDate = document.getElementById('input-t-date').value;
+                            const data = {
+                                id: AppState.editState.timeId || Utils.generateId('act'),
+                                name: document.getElementById('input-t-name').value,
+                                duration: durationMins,
+                                startTime: startTime,
+                                endTime: endTime,
+                                categoryId: document.getElementById('input-t-cat').value,
+                                date: rawDate
+                            };
 
-                        const data = {
-                            id: AppState.editState.timeId || Utils.generateId('act'),
-                            name: document.getElementById('input-t-name').value,
-                            duration: durationMins,
-                            startTime: startTime,
-                            endTime: endTime,
-                            categoryId: document.getElementById('input-t-cat').value,
-                            date: rawDate
+                            // --- PROSES GAMIFICATION STAT ---
+                            const deltas = GameEngine.processActivityImpact(data);
+                            await GameEngine.applyDeltasToStats(deltas);
+                            
+                            const bpCheck = document.getElementById('input-t-bp');
+                            if (bpCheck && bpCheck.checked) {
+                                const bpName = document.getElementById('input-t-bp-name').value || data.name || 'Blueprint Waktu';
+                                const blueprints = AppState.settings.blueprints || { money: [], time: [] };
+                                blueprints.time.push({ id: Utils.generateId('bpt'), title: bpName, name: data.name, startTime: data.startTime, endTime: data.endTime, categoryId: data.categoryId });
+                                await App.updateSetting('blueprints', blueprints);
+                            }
+
+                            await DBEngine.put('activities', data);
+                            if (isNew) AppState.activities.push(data);
+                            else {
+                                const idx = AppState.activities.findIndex(x => x.id === data.id);
+                                if(idx !== -1) AppState.activities[idx] = data;
+                            }
+                            AppState.activities.sort((a,b) => new Date(b.date) - new Date(a.date));
+                            
+                            AppState.editState.timeId = null;
+                            if (AppState.filters.time.editDateRef) AppState.filters.time.editDateRef = null; 
+                            UIEngine.showToast(isNew ? "Sesi Waktu sukses dicatat! +5 XP" : "Perubahan disimpan!", 'success', '⏳');
+                            App.render();
                         };
-                        
-                        // --- LOGIKA SIMPAN BLUEPRINT WAKTU ---
-                        const bpCheck = document.getElementById('input-t-bp');
-                        if (bpCheck && bpCheck.checked) {
-                            const bpName = document.getElementById('input-t-bp-name').value || data.name || 'Blueprint Waktu';
-                            const blueprints = AppState.settings.blueprints || { money: [], time: [] };
-                            blueprints.time.push({ id: Utils.generateId('bpt'), title: bpName, name: data.name, startTime: data.startTime, endTime: data.endTime, categoryId: data.categoryId });
-                            await App.updateSetting('blueprints', blueprints);
-                        }
+                    }
 
-                        await DBEngine.put('activities', data);
-                        if (isNew) AppState.activities.push(data);
-                        else {
-                            const idx = AppState.activities.findIndex(x => x.id === data.id);
-                            if(idx !== -1) AppState.activities[idx] = data;
-                        }
-                        AppState.activities.sort((a,b) => new Date(b.date) - new Date(a.date));
-                        
-                        AppState.editState.timeId = null;
-                        if (AppState.filters.time.editDateRef) AppState.filters.time.editDateRef = null; 
-                        UIEngine.showToast(isNew ? "Sesi Waktu sukses dicatat! +5 XP" : "Perubahan disimpan!", 'success', '⏳');
-                        App.render();
-                    };
-                }
-            },
+                    // 3. FORM KATEGORI (Solusi untuk mencegah relog)
+                    const cForm = document.getElementById('form-category');
+                    if (cForm) {
+                        cForm.onsubmit = async (e) => {
+                            e.preventDefault(); // WAJIB: Mencegah halaman reload
+                            
+                            const type = document.getElementById('cat-type').value;
+                            const name = document.getElementById('cat-name').value;
+                            const emoji = document.getElementById('cat-emoji').value;
+                            const meta = document.getElementById('cat-meta').value;
+                            
+                            // Ambil warna secara random dari palette
+                            const randomColor = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+
+                            const newCategory = {
+                                id: Utils.generateId('cat'),
+                                type: type,
+                                name: name,
+                                emoji: emoji,
+                                color: randomColor,
+                                meta: type === 'time' ? meta : 'lainnya'
+                            };
+
+                            // Simpan ke DB dan push ke state lokal
+                            await DBEngine.put('categories', newCategory);
+                            AppState.categories.push(newCategory);
+                            
+                            UIEngine.showToast("Kategori baru berhasil ditambahkan!", "success", "✨");
+                            
+                            // Kosongkan input dan render ulang layar
+                            cForm.reset();
+                            App.render(); 
+                        };
+                    }
+                },
+                    
+                
+            
                 // --- DELEGATED GLOBAL ACTIONS ---
                 
                 switchTab: (tabId) => {

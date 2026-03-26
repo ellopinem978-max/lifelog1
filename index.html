@@ -313,20 +313,24 @@
     const provider = new GoogleAuthProvider();
 
     // 3. Bikin Wrapper Global Biar Bisa Dipanggil dari Script Utama lu
+   // 3. Bikin Wrapper Global Biar Bisa Dipanggil dari Script Utama lu
     window.CloudEngine = {
         login: async () => {
             try {
                 const result = await signInWithPopup(auth, provider);
+                // 👉 Tembak notifikasi sukses
+                if (window.UIEngine) window.UIEngine.showToast(`Berhasil login sebagai ${result.user.displayName}!`, 'success', '👋');
                 return result.user;
             } catch (error) {
                 console.error("Login Error:", error);
-                alert("Gagal login: " + error.message);
+                if (window.UIEngine) window.UIEngine.showToast("Gagal login: " + error.message, 'error');
             }
         },
         logout: async () => {
             await signOut(auth);
+            // 👉 Tembak notifikasi logout
+            if (window.UIEngine) window.UIEngine.showToast("Berhasil logout.", 'success', '🔒');
         },
-        // UID user yang lagi aktif
         currentUser: null
     };
 

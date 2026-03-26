@@ -2454,270 +2454,246 @@
             },
 
                 // --- VIEW: STATS (Advanced Visualizations with Chart.js) ---
-                renderStats: () => {
-                    const tab = AppState.statView;
-                    
-                    // Get Date Range based on Tab
-                    let wStart, wEnd;
-                    const today = new Date();
-                    
-                    if (tab === 'mingguan' || tab === 'balance') {
-                        const range = Utils.getWeekRange();
-                        wStart = range.start; wEnd = range.end;
-                    } else if (tab === 'bulanan') {
-                        const y = today.getFullYear(), m = today.getMonth();
-                        wStart = new Date(y, m, 1).toISOString().split('T')[0];
-                        wEnd = new Date(y, m + 1, 0).toISOString().split('T')[0];
-                    } else if (tab === 'tahunan') {
-                        const y = today.getFullYear();
-                        wStart = new Date(y, 0, 1).toISOString().split('T')[0];
-                        wEnd = new Date(y, 11, 31).toISOString().split('T')[0];
-                    }
+             // --- VIEW: STATS (Advanced Visualizations with Chart.js) ---
+renderStats: () => {
+    const tab = AppState.statView;
+    
+    // Get Date Range based on Tab
+    let wStart, wEnd;
+    const today = new Date();
+    
+    if (tab === 'mingguan' || tab === 'balance') {
+        const range = Utils.getWeekRange();
+        wStart = range.start; wEnd = range.end;
+    } else if (tab === 'bulanan') {
+        const y = today.getFullYear(), m = today.getMonth();
+        wStart = new Date(y, m, 1).toISOString().split('T')[0];
+        wEnd = new Date(y, m + 1, 0).toISOString().split('T')[0];
+    } else if (tab === 'tahunan') {
+        const y = today.getFullYear();
+        wStart = new Date(y, 0, 1).toISOString().split('T')[0];
+        wEnd = new Date(y, 11, 31).toISOString().split('T')[0];
+    }
 
-                    const filteredExp = AppState.expenses.filter(e => e.date >= wStart && e.date <= wEnd);
-                    const filteredAct = AppState.activities.filter(a => a.date >= wStart && a.date <= wEnd);
+    const filteredExp = AppState.expenses.filter(e => e.date >= wStart && e.date <= wEnd);
+    const filteredAct = AppState.activities.filter(a => a.date >= wStart && a.date <= wEnd);
 
-                    const totalExp = filteredExp.reduce((s, e) => s + e.amount, 0);
-                    const totalTime = filteredAct.reduce((s, a) => s + a.duration, 0);
+    const totalExp = filteredExp.reduce((s, e) => s + e.amount, 0);
+    const totalTime = filteredAct.reduce((s, a) => s + a.duration, 0);
 
-                    let contentHtml = '';
+    let contentHtml = '';
 
-                    // STANDARD STATS (Mingguan, Bulanan, Tahunan)
-                    if (tab !== 'balance') {
-                        // Grouping for Charts
-                        const expByCat = {};
-                        filteredExp.forEach(e => expByCat[e.categoryId] = (expByCat[e.categoryId] || 0) + e.amount);
-                        const sortedExpCat = Object.entries(expByCat).sort((a,b)=>b[1]-a[1]);
-                        
-                        const actByCat = {};
-                        filteredAct.forEach(a => actByCat[a.categoryId] = (actByCat[a.categoryId] || 0) + a.duration);
-                        const sortedActCat = Object.entries(actByCat).sort((a,b)=>b[1]-a[1]);
+    // STANDARD STATS (Mingguan, Bulanan, Tahunan)
+    if (tab !== 'balance') {
+        // Grouping for Charts
+        const expByCat = {};
+        filteredExp.forEach(e => expByCat[e.categoryId] = (expByCat[e.categoryId] || 0) + e.amount);
+        const sortedExpCat = Object.entries(expByCat).sort((a,b)=>b[1]-a[1]);
+        
+        const actByCat = {};
+        filteredAct.forEach(a => actByCat[a.categoryId] = (actByCat[a.categoryId] || 0) + a.duration);
+        const sortedActCat = Object.entries(actByCat).sort((a,b)=>b[1]-a[1]);
 
-                        contentHtml = `
-                            <!-- Big Summary Cards -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div class="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-[2rem] p-8 shadow-xl shadow-orange-200">
-                                    <p class="text-orange-100 font-bold uppercase tracking-widest text-[11px] mb-3">Total Pengeluaran Periode Ini</p>
-                                    <h3 class="text-4xl md:text-5xl font-black tracking-tight mb-2">${Utils.formatCurrency(totalExp)}</h3>
-                                    <p class="text-sm font-medium opacity-80">${filteredExp.length} Transaksi Tercatat</p>
-                                </div>
-                                <div class="bg-gradient-to-br from-brand-500 to-indigo-700 text-white rounded-[2rem] p-8 shadow-xl shadow-brand-200">
-                                    <p class="text-brand-100 font-bold uppercase tracking-widest text-[11px] mb-3">Total Waktu Periode Ini</p>
-                                    <h3 class="text-4xl md:text-5xl font-black tracking-tight mb-2">${Utils.formatDuration(totalTime)}</h3>
-                                    <p class="text-sm font-medium opacity-80">${filteredAct.length} Sesi Aktivitas Tercatat</p>
-                                </div>
-                            </div>
+        contentHtml = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-[2rem] p-8 shadow-xl shadow-orange-200">
+                    <p class="text-orange-100 font-bold uppercase tracking-widest text-[11px] mb-3">Total Pengeluaran Periode Ini</p>
+                    <h3 class="text-4xl md:text-5xl font-black tracking-tight mb-2">${Utils.formatCurrency(totalExp)}</h3>
+                    <p class="text-sm font-medium opacity-80">${filteredExp.length} Transaksi Tercatat</p>
+                </div>
+                <div class="bg-gradient-to-br from-brand-500 to-indigo-700 text-white rounded-[2rem] p-8 shadow-xl shadow-brand-200">
+                    <p class="text-brand-100 font-bold uppercase tracking-widest text-[11px] mb-3">Total Waktu Periode Ini</p>
+                    <h3 class="text-4xl md:text-5xl font-black tracking-tight mb-2">${Utils.formatDuration(totalTime)}</h3>
+                    <p class="text-sm font-medium opacity-80">${filteredAct.length} Sesi Aktivitas Tercatat</p>
+                </div>
+            </div>
 
-                            <!-- Main Trend Chart -->
-                            <div class="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100 mb-8">
-                                <h3 class="font-black text-slate-800 mb-6 text-lg flex items-center gap-2">
-                                    <i data-lucide="trending-up" class="w-5 h-5 text-indigo-500"></i> Tren Gabungan Harian
-                                </h3>
-                                <div class="h-64 md:h-80 w-full relative">
-                                    <canvas id="mainTrendChart"></canvas>
-                                </div>
-                            </div>
+            <div class="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100 mb-8">
+                <h3 class="font-black text-slate-800 mb-6 text-lg flex items-center gap-2">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-indigo-500"></i> Tren Gabungan Harian
+                </h3>
+                <div class="h-64 md:h-80 w-full relative">
+                    <canvas id="mainTrendChart"></canvas>
+                </div>
+            </div>
 
-                            <!-- Distribution Charts -->
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <!-- Expense Distribution -->
-                                <div class="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100">
-                                    <h3 class="font-black text-slate-800 mb-6 text-lg flex items-center gap-2">
-                                        <i data-lucide="pie-chart" class="w-5 h-5 text-orange-500"></i> Porsi Pengeluaran
-                                    </h3>
-                                    ${sortedExpCat.length === 0 ? '<p class="text-center text-slate-400 py-10 font-bold">Data tidak tersedia.</p>' : `
-                                        <div class="h-64 w-full relative mb-8">
-                                            <canvas id="expensePieChart"></canvas>
-                                        </div>
-                                        <div class="space-y-4">
-                                            ${sortedExpCat.map(([id, amt]) => {
-                                                const cat = Utils.getCategoryObj(id, 'money'); 
-                                                const pct = ((amt/totalExp)*100).toFixed(1);
-                                                return `
-                                                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
-                                                        <div class="flex items-center gap-3">
-                                                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${cat.color} text-white flex items-center justify-center">${cat.emoji}</div>
-                                                            <span class="font-bold text-slate-700 text-sm">${cat.name}</span>
-                                                        </div>
-                                                        <div class="text-right">
-                                                            <div class="font-black text-slate-800">${Utils.formatCurrency(amt)}</div>
-                                                            <div class="text-[10px] font-bold text-slate-400 bg-white px-2 rounded-md shadow-sm inline-block">${pct}%</div>
-                                                        </div>
-                                                    </div>
-                                                `;
-                                            }).join('')}
-                                        </div>
-                                    `}
-                                </div>
-
-                                <!-- Time Distribution -->
-                                <div class="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100">
-                                    <h3 class="font-black text-slate-800 mb-6 text-lg flex items-center gap-2">
-                                        <i data-lucide="pie-chart" class="w-5 h-5 text-blue-500"></i> Porsi Waktu
-                                    </h3>
-                                    ${sortedActCat.length === 0 ? '<p class="text-center text-slate-400 py-10 font-bold">Data tidak tersedia.</p>' : `
-                                        <div class="h-64 w-full relative mb-8">
-                                            <canvas id="timePieChart"></canvas>
-                                        </div>
-                                        <div class="space-y-4">
-                                            ${sortedActCat.map(([id, dur]) => {
-                                                const cat = Utils.getCategoryObj(id, 'time'); 
-                                                const pct = ((dur/totalTime)*100).toFixed(1);
-                                                return `
-                                                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
-                                                        <div class="flex items-center gap-3">
-                                                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${cat.color} text-white flex items-center justify-center">${cat.emoji}</div>
-                                                            <span class="font-bold text-slate-700 text-sm">${cat.name}</span>
-                                                        </div>
-                                                        <div class="text-right">
-                                                            <div class="font-black text-slate-800">${Utils.formatDuration(dur)}</div>
-                                                            <div class="text-[10px] font-bold text-slate-400 bg-white px-2 rounded-md shadow-sm inline-block">${pct}%</div>
-                                                        </div>
-                                                    </div>
-                                                `;
-                                            }).join('')}
-                                        </div>
-                                    `}
-                                </div>
-                            </div>
-                        `;
-
-                                            // Hapus timer sebelumnya kalau user pindah tab terlalu cepat
-                        if (AppState.chartRenderTimer) {
-                            clearTimeout(AppState.chartRenderTimer);
-                        }
-
-                        // Jadwalkan render chart baru
-                        AppState.chartRenderTimer = setTimeout(() => {
-                            App.renderCharts(tab, () => Utils.getDatesInRange(wStart, wEnd), filteredExp, filteredAct, sortedExpCat, sortedActCat);
-                        }, 50);
-                    } 
-                   // LIFE BALANCE VIEW
-                        else if (tab === 'balance') {
-                            const lifeMeta = { produktif: 0, hiburan: 0, sosial: 0, kesehatan: 0 };
-                            
-                            // 👉 FIX: Kita mapping data secara akurat biar grafiknya keisi
-                            const metaMap = {
-                                'work_study': 'produktif',
-                                'exercise': 'kesehatan',
-                                'personal_care': 'kesehatan',
-                                'sleep': 'kesehatan',
-                                'ent_passive': 'hiburan',
-                                'ent_interactive': 'hiburan',
-                                'social': 'sosial',
-                                'errands': 'kesehatan' // default kalau nggak jelas
-                            };
-
-                            filteredAct.forEach(a => {
-                                const rawMeta = Utils.getCategoryObj(a.categoryId, 'time').meta || 'errands';
-                                const mappedMeta = metaMap[rawMeta] || 'kesehatan';
-                                lifeMeta[mappedMeta] += a.duration;
-                            });
-                            
-                            const costPerHour = totalTime > 0 ? (totalExp / (totalTime/60)) : 0;
-                        contentHtml = `
-                            <div class="bg-slate-900 text-white rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden mb-8 group">
-                                <!-- Background decors -->
-                                <div class="absolute top-0 right-0 w-96 h-96 bg-brand-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 transition-transform group-hover:scale-110"></div>
-                                <div class="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-30 transition-transform group-hover:scale-110"></div>
-                                
-                                <div class="relative z-10">
-                                    <h3 class="text-3xl font-black mb-2 flex items-center gap-3"><i data-lucide="scale" class="w-8 h-8 text-amber-400"></i> Keseimbangan Hidup</h3>
-                                    <p class="text-slate-400 font-medium text-sm mb-10">Analisis proporsi waktu yang Anda habiskan 7 hari terakhir.</p>
-                                    
-                                    <div class="h-8 md:h-10 w-full bg-white/10 rounded-full overflow-hidden flex shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] mb-8 p-1">
-                                        <div class="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-1000" style="width: ${(lifeMeta.produktif/totalTime)*100||0}%" title="Produktif"></div>
-                                        <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 transition-all duration-1000" style="width: ${(lifeMeta.kesehatan/totalTime)*100||0}%" title="Kesehatan"></div>
-                                        <div class="h-full rounded-full bg-gradient-to-r from-pink-500 to-rose-500 transition-all duration-1000" style="width: ${(lifeMeta.hiburan/totalTime)*100||0}%" title="Hiburan"></div>
-                                        <div class="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-1000" style="width: ${(lifeMeta.sosial/totalTime)*100||0}%" title="Sosial"></div>
-                                    </div>
-                                    
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                        <div class="bg-white/5 p-4 rounded-2xl backdrop-blur-md border border-white/10 text-center">
-                                            <div class="w-10 h-10 mx-auto rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mb-3"><i data-lucide="briefcase"></i></div>
-                                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Produktif</p>
-                                            <p class="font-black text-2xl">${Utils.formatDuration(lifeMeta.produktif)}</p>
-                                        </div>
-                                        <div class="bg-white/5 p-4 rounded-2xl backdrop-blur-md border border-white/10 text-center">
-                                            <div class="w-10 h-10 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3"><i data-lucide="heart"></i></div>
-                                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Kesehatan</p>
-                                            <p class="font-black text-2xl">${Utils.formatDuration(lifeMeta.kesehatan)}</p>
-                                        </div>
-                                        <div class="bg-white/5 p-4 rounded-2xl backdrop-blur-md border border-white/10 text-center">
-                                            <div class="w-10 h-10 mx-auto rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center mb-3"><i data-lucide="gamepad-2"></i></div>
-                                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Hiburan</p>
-                                            <p class="font-black text-2xl">${Utils.formatDuration(lifeMeta.hiburan)}</p>
-                                        </div>
-                                        <div class="bg-white/5 p-4 rounded-2xl backdrop-blur-md border border-white/10 text-center">
-                                            <div class="w-10 h-10 mx-auto rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center mb-3"><i data-lucide="users"></i></div>
-                                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Sosial</p>
-                                            <p class="font-black text-2xl">${Utils.formatDuration(lifeMeta.sosial)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Cost of Lifestyle -->
-                            <div class="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-100 shadow-sm">
-                                <div class="flex items-start gap-4 mb-8">
-                                    <div class="bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600 p-3 rounded-2xl"><i data-lucide="trending-down" class="w-7 h-7"></i></div>
-                                    <div>
-                                        <h3 class="font-black text-slate-800 text-xl mb-1">Cost of Lifestyle (Biaya Hidup per Jam)</h3>
-                                        <p class="text-slate-500 text-sm font-medium">Korelasi rasio uang terbakar berbanding jam aktivitas yang dilalui.</p>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-50 border border-slate-200/60 p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
-                                    <div>
-                                        <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Setiap Jam Anda Menghabiskan</p>
-                                        <h4 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 tracking-tight">
-                                            ${Utils.formatCurrency(costPerHour)} <span class="text-2xl text-slate-400 font-bold ml-1">/ Jam</span>
-                                        </h4>
-                                    </div>
-                                     <div class="w-full md:w-auto bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex-1 md:max-w-md flex flex-col relative overflow-hidden group">
-                                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[50px] opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                                        
-                                        <div class="flex justify-between items-center mb-3 relative z-10">
-                                            <p class="text-sm font-black text-slate-800 flex items-center gap-2">
-                                                <i data-lucide="bot" class="w-5 h-5 text-indigo-500"></i> AI Companion
-                                            </p>
-                                            <button onclick="App.askAI()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
-                                                <i data-lucide="sparkles" class="w-3 h-3"></i> Analisis Data
-                                            </button>
-                                        </div>
-                                        
-                                        <div id="ai-response-box" class="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 relative z-10 min-h-[100px] flex items-center justify-center">
-                                            <p class="text-sm text-slate-500 text-center font-medium italic">Klik "Analisis Data" untuk meminta AI mencari korelasi gaya hidupmu minggu ini.</p>
-                                        </div>
-                                        
-                                        <div class="pt-4 mt-4 border-t border-slate-100 relative z-10">
-                                            <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1.5 flex items-center gap-1.5"><i data-lucide="radar" class="w-3 h-3"></i> Proyeksi Akhir Bulan</p>
-                                            <p class="text-sm text-slate-700 leading-relaxed">${predictionMsg}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    // Nav Tabs
-                    const navHtml = `
-                        <div class="flex bg-slate-200/60 p-1.5 rounded-2xl md:w-max shadow-inner mb-8 overflow-x-auto no-scrollbar">
-                            ${['mingguan', 'bulanan', 'tahunan', 'balance'].map(t => `
-                                <button onclick="App.changeStatTab('${t}')" class="flex-1 min-w-[100px] md:px-8 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${tab === t ? 'bg-white text-brand-600 shadow-md scale-100' : 'text-slate-500 hover:text-slate-700 scale-95'}">
-                                    ${t === 'balance' ? 'Life Balance' : t}
-                                </button>
-                            `).join('')}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100">
+                    <h3 class="font-black text-slate-800 mb-6 text-lg flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-5 h-5 text-orange-500"></i> Porsi Pengeluaran
+                    </h3>
+                    ${sortedExpCat.length === 0 ? '<p class="text-center text-slate-400 py-10 font-bold">Data tidak tersedia.</p>' : `
+                        <div class="h-64 w-full relative mb-8">
+                            <canvas id="expensePieChart"></canvas>
                         </div>
-                    `;
-
-                    return `
-                        <div class="animate-scaleIn pb-10">
-                            ${navHtml}
-                            ${contentHtml}
+                        <div class="space-y-4">
+                            ${sortedExpCat.map(([id, amt]) => {
+                                const cat = Utils.getCategoryObj(id, 'money'); 
+                                const pct = ((amt/totalExp)*100).toFixed(1);
+                                return `
+                                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${cat.color} text-white flex items-center justify-center">${cat.emoji}</div>
+                                            <span class="font-bold text-slate-700 text-sm">${cat.name}</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="font-black text-slate-800">${Utils.formatCurrency(amt)}</div>
+                                            <div class="text-[10px] font-bold text-slate-400 bg-white px-2 rounded-md shadow-sm inline-block">${pct}%</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
-                    `;
-                },
+                    `}
+                </div>
+
+                <div class="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100">
+                    <h3 class="font-black text-slate-800 mb-6 text-lg flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-5 h-5 text-blue-500"></i> Porsi Waktu
+                    </h3>
+                    ${sortedActCat.length === 0 ? '<p class="text-center text-slate-400 py-10 font-bold">Data tidak tersedia.</p>' : `
+                        <div class="h-64 w-full relative mb-8">
+                            <canvas id="timePieChart"></canvas>
+                        </div>
+                        <div class="space-y-4">
+                            ${sortedActCat.map(([id, dur]) => {
+                                const cat = Utils.getCategoryObj(id, 'time'); 
+                                const pct = ((dur/totalTime)*100).toFixed(1);
+                                return `
+                                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${cat.color} text-white flex items-center justify-center">${cat.emoji}</div>
+                                            <span class="font-bold text-slate-700 text-sm">${cat.name}</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="font-black text-slate-800">${Utils.formatDuration(dur)}</div>
+                                            <div class="text-[10px] font-bold text-slate-400 bg-white px-2 rounded-md shadow-sm inline-block">${pct}%</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `}
+                </div>
+            </div>
+        `;
+
+        // Render Chart dengan aman biar nggak memori leak
+        if (AppState.chartRenderTimer) clearTimeout(AppState.chartRenderTimer);
+        AppState.chartRenderTimer = setTimeout(() => {
+            App.renderCharts(tab, () => Utils.getDatesInRange(wStart, wEnd), filteredExp, filteredAct, sortedExpCat, sortedActCat);
+        }, 50);
+
+    } 
+    // LIFE BALANCE VIEW
+    else if (tab === 'balance') {
+        const lifeMeta = { produktif: 0, hiburan: 0, sosial: 0, kesehatan: 0 };
+        
+        // Pemetaan kategori biar grafiknya keisi
+        const metaMap = {
+            'work_study': 'produktif',
+            'exercise': 'kesehatan',
+            'personal_care': 'kesehatan',
+            'sleep': 'kesehatan',
+            'ent_passive': 'hiburan',
+            'ent_interactive': 'hiburan',
+            'social': 'sosial',
+            'errands': 'kesehatan' // default
+        };
+
+        filteredAct.forEach(a => {
+            const rawMeta = Utils.getCategoryObj(a.categoryId, 'time').meta || 'errands';
+            const mappedMeta = metaMap[rawMeta] || 'kesehatan';
+            lifeMeta[mappedMeta] += a.duration;
+        });
+        
+        const costPerHour = totalTime > 0 ? (totalExp / (totalTime/60)) : 0;
+
+        contentHtml = `
+            <div class="bg-slate-900 text-white rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden mb-8 group">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-brand-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 transition-transform group-hover:scale-110"></div>
+                <div class="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-30 transition-transform group-hover:scale-110"></div>
+                
+                <div class="relative z-10">
+                    <h3 class="text-3xl font-black mb-2 flex items-center gap-3"><i data-lucide="scale" class="w-8 h-8 text-amber-400"></i> Keseimbangan Hidup</h3>
+                    <p class="text-slate-400 font-medium text-sm mb-10">Analisis proporsi waktu yang Anda habiskan 7 hari terakhir.</p>
+                    
+                    <div class="h-8 md:h-10 w-full bg-white/10 rounded-full overflow-hidden flex shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] mb-8 p-1">
+                        <div class="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-1000" style="width: ${(lifeMeta.produktif/totalTime)*100||0}%" title="Produktif"></div>
+                        <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 transition-all duration-1000" style="width: ${(lifeMeta.kesehatan/totalTime)*100||0}%" title="Kesehatan"></div>
+                        <div class="h-full rounded-full bg-gradient-to-r from-pink-500 to-rose-500 transition-all duration-1000" style="width: ${(lifeMeta.hiburan/totalTime)*100||0}%" title="Hiburan"></div>
+                        <div class="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-1000" style="width: ${(lifeMeta.sosial/totalTime)*100||0}%" title="Sosial"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="bg-white/5 p-4 rounded-2xl backdrop-blur-md border border-white/10 text-center">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mb-3"><i data-lucide="briefcase"></i></div>
+                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Produktif</p>
+                            <p class="font-black text-2xl">${Utils.formatDuration(lifeMeta.produktif)}</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl backdrop-blur-md border border-white/10 text-center">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3"><i data-lucide="heart"></i></div>
+                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Kesehatan</p>
+                            <p class="font-black text-2xl">${Utils.formatDuration(lifeMeta.kesehatan)}</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl backdrop-blur-md border border-white/10 text-center">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center mb-3"><i data-lucide="gamepad-2"></i></div>
+                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Hiburan</p>
+                            <p class="font-black text-2xl">${Utils.formatDuration(lifeMeta.hiburan)}</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl backdrop-blur-md border border-white/10 text-center">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center mb-3"><i data-lucide="users"></i></div>
+                            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Sosial</p>
+                            <p class="font-black text-2xl">${Utils.formatDuration(lifeMeta.sosial)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-100 shadow-sm">
+                <div class="flex items-start gap-4 mb-8">
+                    <div class="bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600 p-3 rounded-2xl"><i data-lucide="trending-down" class="w-7 h-7"></i></div>
+                    <div>
+                        <h3 class="font-black text-slate-800 text-xl mb-1">Cost of Lifestyle (Biaya Hidup per Jam)</h3>
+                        <p class="text-slate-500 text-sm font-medium">Korelasi rasio uang terbakar berbanding jam aktivitas yang dilalui.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-50 border border-slate-200/60 p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div>
+                        <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Setiap Jam Anda Menghabiskan</p>
+                        <h4 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 tracking-tight">
+                            ${Utils.formatCurrency(costPerHour)} <span class="text-2xl text-slate-400 font-bold ml-1">/ Jam</span>
+                        </h4>
+                    </div>
+                    <div class="w-full md:w-auto bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex-1 md:max-w-md">
+                        <p class="text-sm font-black text-slate-700 mb-2 flex items-center gap-2"><i data-lucide="info" class="w-5 h-5 text-indigo-500"></i> AI Insight</p>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            ${costPerHour > 50000 ? "Wow, gaya hidup Anda cukup premium minggu ini. Coba evaluasi kembali pengeluaran yang tidak esensial untuk menjaga *cash flow*." : costPerHour > 10000 ? "Gaya hidup Anda terbilang standar. Jaga keseimbangan antara pendapatan dan konsumsi untuk kestabilan jangka panjang." : "Luar biasa! Anda hidup dengan sangat hemat dan efisien minggu ini. Pertahankan jika ini selaras dengan tujuan finansial Anda."}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Nav Tabs
+    const navHtml = `
+        <div class="flex bg-slate-200/60 p-1.5 rounded-2xl md:w-max shadow-inner mb-8 overflow-x-auto no-scrollbar">
+            ${['mingguan', 'bulanan', 'tahunan', 'balance'].map(t => `
+                <button onclick="App.changeStatTab('${t}')" class="flex-1 min-w-[100px] md:px-8 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${tab === t ? 'bg-white text-brand-600 shadow-md scale-100' : 'text-slate-500 hover:text-slate-700 scale-95'}">
+                    ${t === 'balance' ? 'Life Balance' : t}
+                </button>
+            `).join('')}
+        </div>
+    `;
+
+    return `
+        <div class="animate-scaleIn pb-10">
+            ${navHtml}
+            ${contentHtml}
+        </div>
+    `;
+},
 
                 // --- VIEW: SETTINGS (Advanced Management) ---
                 renderSettings: () => {

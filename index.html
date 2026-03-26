@@ -2902,14 +2902,15 @@
      * MODULE 8.5: AI COMPANION ENGINE
      * ==========================================
      */
-    const AIEngine = {
+   const AIEngine = {
         // ⚠️ PASTE API KEY GEMINI LU DI SINI
         apiKey: "AIzaSyDyY0lPAl3MqxJLvkqp5eJHCUg5caUYZyU", 
         
         generateInsight: async () => {
-            if (!AIEngine.apiKey || AIEngine.apiKey === "AIzaSyDyY0lPAl3MqxJLvkqp5eJHCUg5caUYZyU") {
+            // 👇 FIX: Cukup cek kalau apiKey-nya kosong aja
+            if (!AIEngine.apiKey) {
                 UIEngine.showToast("API Key Gemini belum diisi bro!", "error");
-                return "Bro, API Key Gemini-nya belum lu masukin di kode. Ambil dulu di Google AI Studio ya!";
+                return "Bro, API Key Gemini-nya belum lu masukin di kode.";
             }
 
             try {

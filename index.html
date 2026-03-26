@@ -445,9 +445,10 @@
             if(btnText) btnText.innerText = "Login with Google";
             if(btnIcon) btnIcon.setAttribute('data-lucide', 'log-in');
         }
-        
+      
         // Re-render icon lucide kalau ada perubahan DOM
         if (window.lucide) window.lucide.createIcons();
+        if (window.App && AppState.activeTab === 'settings') window.App.render();
     });
 </script>
         <!-- ======================================================================================= -->
@@ -2696,6 +2697,9 @@
 
                 // --- VIEW: SETTINGS (Advanced Management) ---
                 renderSettings: () => {
+                    const user = window.CloudEngine ? window.CloudEngine.currentUser : null;
+                    const authText = user ? "Logout dari Google" : "Login with Google";
+                    const authIcon = user ? "log-out" : "log-in";
                     return `
                         <div class="space-y-8 animate-scaleIn pb-10">
                             <!-- TROPHY ROOM -->
@@ -2743,8 +2747,8 @@
                                         <span class="text-[10px] uppercase font-bold mt-1 opacity-70">Hapus Semua Data</span>
                                     </button>
                                     <button onclick="window.CloudEngine.currentUser ? window.CloudEngine.logout() : window.CloudEngine.login()" class="flex flex-col items-center justify-center p-6 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-3xl transition-colors border border-blue-100 group">
-                                        <i id="auth-btn-icon" data-lucide="log-in" class="w-8 h-8 mb-3 group-hover:-translate-y-1 transition-transform"></i>
-                                        <span id="auth-btn-text" class="font-black">Login with Google</span>
+                                        <i id="auth-btn-icon" data-lucide="${authIcon}" class="w-8 h-8 mb-3 group-hover:-translate-y-1 transition-transform"></i>
+                                        <span id="auth-btn-text" class="font-black">${authText}</span>
                                         <span class="text-[10px] uppercase font-bold mt-1 opacity-70">Cloud Sync</span>
                                     </button>
                                     <button onclick="window.CloudEngine.syncToCloud()" class="flex flex-col items-center justify-center p-6 bg-brand-50 hover:bg-brand-100 text-brand-600 rounded-3xl transition-colors border border-brand-100 group">
@@ -3744,6 +3748,11 @@
              * BOOTSTRAP
              * ==========================================
              */
+            // 👉 JEMBATAN UNTUK FIREBASE MODULE
+            window.UIEngine = UIEngine;
+            window.DBEngine = DBEngine;
+            window.App = App;
+
             window.addEventListener('DOMContentLoaded', () => {
                 App.init();
             });

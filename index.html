@@ -314,11 +314,12 @@
 
     // 3. Bikin Wrapper Global Biar Bisa Dipanggil dari Script Utama lu
    // 3. Bikin Wrapper Global Biar Bisa Dipanggil dari Script Utama lu
+   // 3. Bikin Wrapper Global Biar Bisa Dipanggil dari Script Utama lu
     window.CloudEngine = {
+        currentUser: null,
         login: async () => {
             try {
                 const result = await signInWithPopup(auth, provider);
-                // 👉 Tembak notifikasi sukses
                 if (window.UIEngine) window.UIEngine.showToast(`Berhasil login sebagai ${result.user.displayName}!`, 'success', '👋');
                 return result.user;
             } catch (error) {
@@ -328,10 +329,93 @@
         },
         logout: async () => {
             await signOut(auth);
-            // 👉 Tembak notifikasi logout
             if (window.UIEngine) window.UIEngine.showToast("Berhasil logout.", 'success', '🔒');
         },
-        currentUser: null
+        
+        // 👉 FITUR BARU: Push Data ke Cloud
+        syncToCloud: async () => {
+            if (!window.CloudEngine.currentUser) {
+                window.UIEngine.showToast("Lu harus login Google dulu bro buat backup ke Cloud!", "warning", "⚠️");
+                return;
+            }
+            try {
+                window.UIEngine.showToast("Sedang mengupload data ke Cloud...", "info", "☁️");
+                const uid = window.CloudEngine.currentUser.uid;
+                
+                // Ambil semua data lokal
+                const expenses = await window.DBEngine.getAll('expenses');
+                const activities = await window.DBEngine.getAll('activities');
+                const categories = await window.DBEngine.getAll('categories');
+                const settingsArray = await window.DBEngine.getAll('settings');
+                
+                // Ubah array settings jadi object biar gampang disimpen
+                const settingsObj = {};
+                settingsArray.forEach(s => settingsObj[s.key] = s.value);
+
+                // Kirim ke Firestore
+                await setDoc(doc(db, "users", uid), {
+                    expenses: expenses,
+                    activities: activities,
+                    categories: categories,
+                    settings: settingsObj,
+                    lastSync: new Date().toISOString()
+                });
+                
+                window.UIEngine.showToast("Data berhasil di-backup ke Cloud!", "success", "✅");
+            } catch (error) {
+                console.error("Sync Up Error:", error);
+                window.UIEngine.showToast("Gagal upload data: " + error.message, "error");
+            }
+        },
+
+        // 👉 FITUR BARU: Tarik Data dari Cloud
+        syncFromCloud: async () => {
+            if (!window.CloudEngine.currentUser) {
+                window.UIEngine.showToast("Login Google dulu bro!", "warning", "⚠️");
+                return;
+            }
+            
+            // Konfirmasi biar user nggak kaget datanya ketimpa
+            window.UIEngine.showModal("Tarik Data Cloud", 
+                "<p class='text-amber-600 font-bold'>Peringatan: Menarik data dari Cloud akan menimpa semua data lokal di device ini. Lanjutkan?</p>", 
+                async () => {
+                    try {
+                        window.UIEngine.showToast("Sedang mengunduh data dari Cloud...", "info", "☁️");
+                        const uid = window.CloudEngine.currentUser.uid;
+                        const docSnap = await getDoc(doc(db, "users", uid));
+
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            
+                            // Bersihkan DB Lokal
+                            await window.DBEngine.clear('expenses');
+                            await window.DBEngine.clear('activities');
+                            await window.DBEngine.clear('categories');
+                            await window.DBEngine.clear('settings');
+
+                            // Masukkan data Cloud ke DB Lokal
+                            if (data.expenses?.length) await window.DBEngine.bulkPut('expenses', data.expenses);
+                            if (data.activities?.length) await window.DBEngine.bulkPut('activities', data.activities);
+                            if (data.categories?.length) await window.DBEngine.bulkPut('categories', data.categories);
+                            
+                            if (data.settings) {
+                                for (const [k, v] of Object.entries(data.settings)) {
+                                    await window.DBEngine.put('settings', { key: k, value: v });
+                                }
+                            }
+
+                            window.UIEngine.showToast("Restore dari Cloud sukses! Memuat ulang...", "success", "🔄");
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            window.UIEngine.showToast("Belum ada backup data di Cloud untuk akun ini.", "warning", "📂");
+                        }
+                    } catch (error) {
+                        console.error("Sync Down Error:", error);
+                        window.UIEngine.showToast("Gagal download data: " + error.message, "error");
+                    }
+                }, "Ya, Tarik Data"
+            );
+        }
     };
 
     // 4. Listener kalau status login berubah (Nge-detect pindah device)
@@ -2639,7 +2723,7 @@
                                 <h3 class="font-black text-slate-800 text-xl mb-2 flex items-center gap-2"><i data-lucide="database" class="w-6 h-6 text-brand-500"></i> Manajemen Database Lokal</h3>
                                 <p class="text-slate-500 text-sm mb-8 font-medium">Aplikasi ini berjalan 100% offline di browser Anda. Lakukan backup data secara berkala untuk keamanan.</p>
                                 
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                                     <button onclick="App.exportData()" class="flex flex-col items-center justify-center p-6 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-3xl transition-colors border border-brand-100 group">
                                         <i data-lucide="download-cloud" class="w-8 h-8 mb-3 group-hover:-translate-y-1 transition-transform"></i>
                                         <span class="font-black">Backup (Export)</span>
@@ -2663,6 +2747,17 @@
                                         <span id="auth-btn-text" class="font-black">Login with Google</span>
                                         <span class="text-[10px] uppercase font-bold mt-1 opacity-70">Cloud Sync</span>
                                     </button>
+                                    <button onclick="window.CloudEngine.syncToCloud()" class="flex flex-col items-center justify-center p-6 bg-brand-50 hover:bg-brand-100 text-brand-600 rounded-3xl transition-colors border border-brand-100 group">
+                                    <i data-lucide="cloud-upload" class="w-8 h-8 mb-3 group-hover:-translate-y-1 transition-transform"></i>
+                                    <span class="font-black">Save ke Cloud</span>
+                                    <span class="text-[10px] uppercase font-bold mt-1 opacity-70">Backup Online</span>
+                                </button>
+
+                                <button onclick="window.CloudEngine.syncFromCloud()" class="flex flex-col items-center justify-center p-6 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-3xl transition-colors border border-indigo-100 group relative">
+                                    <i data-lucide="cloud-download" class="w-8 h-8 mb-3 group-hover:-translate-y-1 transition-transform"></i>
+                                    <span class="font-black">Load dari Cloud</span>
+                                    <span class="text-[10px] uppercase font-bold mt-1 opacity-70">Restore Online</span>
+                                </button>
                                 </div>
                             </div>
 

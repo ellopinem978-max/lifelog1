@@ -291,7 +291,77 @@
         <!-- Toasts Container -->
         <div id="toast-container" class="fixed top-4 right-4 md:top-6 md:right-6 z-[200] flex flex-col gap-3 pointer-events-none w-full max-w-[320px] px-4 md:px-0"></div>
 
+        <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+    // 1. PASTE FIREBASE CONFIG LU DI SINI
+    const firebaseConfig = {
+    apiKey: "AIzaSyCf4OwcSbwD5g5pDHvGev8E7Ye5zr14jrM",
+    authDomain: "lifetrack-a1dd9.firebaseapp.com",
+    projectId: "lifetrack-a1dd9",
+    storageBucket: "lifetrack-a1dd9.firebasestorage.app",
+    messagingSenderId: "151838180601",
+    appId: "1:151838180601:web:10e375650fe0e9d1a88e28"
+    };
+
+    // 2. Inisialisasi Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    // 3. Bikin Wrapper Global Biar Bisa Dipanggil dari Script Utama lu
+    window.CloudEngine = {
+        login: async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                return result.user;
+            } catch (error) {
+                console.error("Login Error:", error);
+                alert("Gagal login: " + error.message);
+            }
+        },
+        logout: async () => {
+            await signOut(auth);
+        },
+        // UID user yang lagi aktif
+        currentUser: null
+    };
+
+    // 4. Listener kalau status login berubah (Nge-detect pindah device)
+    onAuthStateChanged(auth, (user) => {
+        const btnText = document.getElementById('auth-btn-text');
+        const btnIcon = document.getElementById('auth-btn-icon');
+        
+        if (user) {
+            window.CloudEngine.currentUser = user;
+            console.log("User Logged In:", user.email);
+            
+            // Ubah UI Sidebar
+            document.getElementById('sidebar-username').innerText = user.displayName;
+            document.getElementById('sidebar-avatar').innerText = "🔥"; 
+            
+            // Ubah Tombol di Setting
+            if(btnText) btnText.innerText = "Logout dari Google";
+            if(btnIcon) btnIcon.setAttribute('data-lucide', 'log-out');
+            
+        } else {
+            window.CloudEngine.currentUser = null;
+            
+            // Reset UI
+            document.getElementById('sidebar-username').innerText = "Guest (Offline)";
+            document.getElementById('sidebar-avatar').innerText = "🦸";
+            
+            if(btnText) btnText.innerText = "Login with Google";
+            if(btnIcon) btnIcon.setAttribute('data-lucide', 'log-in');
+        }
+        
+        // Re-render icon lucide kalau ada perubahan DOM
+        if (window.lucide) window.lucide.createIcons();
+    });
+</script>
         <!-- ======================================================================================= -->
         <!-- APPLICATION LOGIC (Vanilla JavaScript Architecture)                                     -->
         <!-- ======================================================================================= -->
@@ -1695,10 +1765,7 @@
                                 <div class="bg-blue-100 text-blue-600 p-2 rounded-xl"><i data-lucide="clock" class="w-5 h-5"></i></div>
                                 Timeline Hari Ini
                             </h3>
-                            <h3 class="text-xl font-black text-slate-800 mb-8 flex items-center gap-3">
-                                <div class="bg-blue-100 text-blue-600 p-2 rounded-xl"><i data-lucide="clock" class="w-5 h-5"></i></div>
-                                Timeline Hari Ini
-                            </h3>
+                         
 
                             <div class="mb-10">
                                 <div class="flex justify-between items-center mb-2">
@@ -2586,6 +2653,11 @@
                                         <i data-lucide="alert-triangle" class="w-8 h-8 mb-3 group-hover:-translate-y-1 transition-transform"></i>
                                         <span class="font-black">Reset Pabrik</span>
                                         <span class="text-[10px] uppercase font-bold mt-1 opacity-70">Hapus Semua Data</span>
+                                    </button>
+                                    <button onclick="window.CloudEngine.currentUser ? window.CloudEngine.logout() : window.CloudEngine.login()" class="flex flex-col items-center justify-center p-6 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-3xl transition-colors border border-blue-100 group">
+                                        <i id="auth-btn-icon" data-lucide="log-in" class="w-8 h-8 mb-3 group-hover:-translate-y-1 transition-transform"></i>
+                                        <span id="auth-btn-text" class="font-black">Login with Google</span>
+                                        <span class="text-[10px] uppercase font-bold mt-1 opacity-70">Cloud Sync</span>
                                     </button>
                                 </div>
                             </div>

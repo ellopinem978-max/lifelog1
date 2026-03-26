@@ -395,7 +395,7 @@
             };
                         // ... KODE LAMA (tepat di bawah DEFAULT_TIME_CATEGORIES)
             const STATS_CONFIG = {
-                focus: { name: 'Focus', icon: 'crosshairs', colorClass: 'text-violet-500', bgClass: 'bg-violet-500', hex: '#8b5cf6', desc: 'Konsentrasi tugas bernilai.' },
+               focus: { name: 'Focus', icon: 'target', colorClass: 'text-violet-500', bgClass: 'bg-violet-500', hex: '#8b5cf6', desc: 'Konsentrasi tugas bernilai.' },
                 discipline: { name: 'Discipline', icon: 'shield-half', colorClass: 'text-blue-500', bgClass: 'bg-blue-500', hex: '#3b82f6', desc: 'Kontrol diri dan konsistensi.' },
                 growth: { name: 'Growth', icon: 'sprout', colorClass: 'text-emerald-500', bgClass: 'bg-emerald-500', hex: '#10b981', desc: 'Perkembangan skill.' },
                 health: { name: 'Health', icon: 'heart-pulse', colorClass: 'text-red-500', bgClass: 'bg-red-500', hex: '#ef4444', desc: 'Kondisi fisik (tidur/gerak).' },
@@ -490,7 +490,8 @@
                 statView: 'mingguan', // mingguan, bulanan, tahunan, balance
                 
                 // Chart instances to prevent memory leaks
-                activeCharts: {}
+                activeCharts: {},
+                chartRenderTimer: null
             };
 
 
@@ -1464,9 +1465,71 @@
                     const weekExp = AppState.expenses.filter(e => e.date >= wStart && e.date <= wEnd);
                     const totalExpWeek = weekExp.reduce((s, e) => s + e.amount, 0);
 
+                    const currentMonthStr = Utils.getMonthString();
+                    const monthExp = AppState.expenses.filter(e => e.date.startsWith(currentMonthStr));
+                    const totalExpMonth = monthExp.reduce((s, e) => s + e.amount, 0);
+
+                    // --- ALGORITMA PREDIKSI SALDO BERJALAN ---
+                    const todayDateObj = new Date();
+                    const currentDay = todayDateObj.getDate();
+                    const daysInMonth = new Date(todayDateObj.getFullYear(), todayDateObj.getMonth() + 1, 0).getDate();
+
+                    const budget = AppState.settings.budget || 0;
+                    const sisaBudget = budget - totalExpMonth;
+                    const avgDailySpend = currentDay > 0 ? (totalExpMonth / currentDay) : 0;
+                    const predictedSpend = avgDailySpend * daysInMonth;
+                    const isOverBudget = predictedSpend > budget;
+
+                    let predictionMsg = "";
+                    if (budget > 0) {
+                        if (totalExpMonth >= budget) {
+                            predictionMsg = `<span class="text-red-600 font-black">Gawat!</span> Budget bulan ini sudah habis. Total minus: <b>Rp ${Utils.formatCurrency(totalExpMonth - budget).replace('Rp','')}</b>`;
+                        } else {
+                            if (avgDailySpend > 0) {
+                                const estimatedDaysLeft = Math.floor(sisaBudget / avgDailySpend);
+                                if (isOverBudget) {
+                                    predictionMsg = `<span class="text-orange-600 font-bold">Awas Boncos!</span> Dengan laju saat ini, budgetmu akan habis dalam <b>${estimatedDaysLeft} hari</b>. Prediksi total pengeluaran akhir bulan: <b>Rp ${Utils.formatCurrency(predictedSpend).replace('Rp','')}</b>.`;
+                                } else {
+                                    predictionMsg = `<span class="text-emerald-600 font-bold">Aman Terkendali!</span> Laju pengeluaranmu wajar. Sisa budget aman sampai akhir bulan dengan proyeksi sisa <b>Rp ${Utils.formatCurrency(budget - predictedSpend).replace('Rp','')}</b>.`;
+                                }
+                            } else {
+                                predictionMsg = `<span class="text-blue-600 font-bold">Awal yang baik!</span> Belum ada pengeluaran signifikan bulan ini.`;
+                            }
+                        }
+                    } else {
+                        predictionMsg = `Setel target budget bulanan di menu Pengaturan untuk melihat prediksi AI.`;
+                    }
+                    // --- AKHIR ALGORITMA ---
+
                     const gStats = GameEngine.getStats();
                     const insights = InsightEngine.generateInsights(weekExp, AppState.activities.filter(a => a.date >= wStart && a.date <= wEnd));
-
+                    // --- ALGORITMA PETA BLOK WAKTU ---
+                    let timeBlocksHtml = '';
+                    sortedTodayAct.forEach(a => {
+                        if(!a.startTime || !a.endTime) return;
+                        
+                        // Ubah jam (HH:MM) jadi total menit dari 00:00
+                        const parseTime = (t) => { const [h, m] = t.split(':'); return parseInt(h)*60 + parseInt(m); };
+                        const startMins = parseTime(a.startTime);
+                        const endMins = parseTime(a.endTime);
+                        let dur = endMins - startMins;
+                        if(dur < 0) dur = 0; 
+                        
+                        // Kalkulasi persentase posisi dan lebar blok dari total 1440 menit (24 jam)
+                        const leftPct = (startMins / 1440) * 100;
+                        const widthPct = (dur / 1440) * 100;
+                        const cat = Utils.getCategoryObj(a.categoryId, 'time');
+                        
+                        timeBlocksHtml += `
+                            <div class="absolute h-full bg-gradient-to-r ${cat.color} rounded-sm shadow-sm group/block cursor-pointer border border-white/20 hover:scale-y-125 transition-transform z-10" 
+                                style="left: ${leftPct}%; width: ${widthPct}%; min-width: 3px;">
+                                <div class="opacity-0 group-hover/block:opacity-100 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-800 text-white text-[10px] py-1.5 px-2.5 rounded-lg whitespace-nowrap z-50 pointer-events-none transition-opacity font-bold shadow-xl">
+                                    ${cat.emoji} ${Utils.escapeHTML(a.name)}<br/><span class="text-slate-300">${a.startTime} - ${a.endTime}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    // --- AKHIR ALGORITMA PETA WAKTU ---
                     let insightsHtml = insights.map(ins => `
                         <div class="${ins.bgBox} border p-5 rounded-2xl flex items-start gap-4 transition-transform hover:-translate-y-1 duration-300">
                             <div class="text-4xl mt-1 filter drop-shadow-sm">${ins.icon}</div>
@@ -1581,8 +1644,9 @@
                                         </div>
                                         <p class="text-slate-500 text-xs font-black uppercase tracking-widest mb-2 relative z-10">Pengeluaran</p>
                                         <h3 class="text-4xl font-black text-slate-800 tracking-tight relative z-10">${Utils.formatCurrency(totalExpToday)}</h3>
-                                        <div class="mt-6 pt-4 border-t border-orange-100/50 relative z-10">
-                                            <p class="text-xs font-bold text-slate-500 flex justify-between">Total Minggu Ini: <span class="text-slate-800">${Utils.formatCurrency(totalExpWeek)}</span></p>
+                                        <div class="mt-6 pt-4 border-t border-orange-100/50 relative z-10 flex flex-col gap-1.5">
+                                            <p class="text-xs font-bold text-slate-500 flex justify-between">Minggu Ini: <span class="text-slate-800">${Utils.formatCurrency(totalExpWeek)}</span></p>
+                                            <p class="text-xs font-bold text-slate-500 flex justify-between">Bulan Ini: <span class="text-slate-800">${Utils.formatCurrency(totalExpMonth)}</span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -1631,6 +1695,29 @@
                                 <div class="bg-blue-100 text-blue-600 p-2 rounded-xl"><i data-lucide="clock" class="w-5 h-5"></i></div>
                                 Timeline Hari Ini
                             </h3>
+                            <h3 class="text-xl font-black text-slate-800 mb-8 flex items-center gap-3">
+                                <div class="bg-blue-100 text-blue-600 p-2 rounded-xl"><i data-lucide="clock" class="w-5 h-5"></i></div>
+                                Timeline Hari Ini
+                            </h3>
+
+                            <div class="mb-10">
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1.5">
+                                        <i data-lucide="map" class="w-4 h-4"></i> Peta Distribusi Waktu (24 Jam)
+                                    </p>
+                                </div>
+                                <div class="relative w-full h-8 bg-slate-100 rounded-lg overflow-visible border border-slate-200 shadow-inner">
+                                    ${timeBlocksHtml}
+                                    
+                                    <div class="absolute inset-0 flex justify-between w-full pointer-events-none">
+                                        ${[0, 6, 12, 18, 24].map(h => `
+                                            <div class="h-full border-l border-slate-300/60 relative">
+                                                <span class="absolute -bottom-6 -translate-x-1/2 text-[9px] font-black text-slate-400">${h}:00</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="h-4"></div> </div>
                             
                             ${sortedTodayAct.length === 0 ? `
                                 <div class="text-center py-8 opacity-50">
@@ -2339,11 +2426,15 @@
                             </div>
                         `;
 
-                        // Schedule Chart generation after HTML is inserted
-                        setTimeout(() => {
-                            App.renderCharts(tab, dates => Utils.getDatesInRange(wStart, wEnd), filteredExp, filteredAct, sortedExpCat, sortedActCat);
-                        }, 50);
+                                            // Hapus timer sebelumnya kalau user pindah tab terlalu cepat
+                        if (AppState.chartRenderTimer) {
+                            clearTimeout(AppState.chartRenderTimer);
+                        }
 
+                        // Jadwalkan render chart baru
+                        AppState.chartRenderTimer = setTimeout(() => {
+                            App.renderCharts(tab, () => Utils.getDatesInRange(wStart, wEnd), filteredExp, filteredAct, sortedExpCat, sortedActCat);
+                        }, 50);
                     } 
                     // LIFE BALANCE VIEW
                     else if (tab === 'balance') {
@@ -2415,11 +2506,15 @@
                                         </h4>
                                     </div>
                                     <div class="w-full md:w-auto bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex-1 md:max-w-md">
-                                        <p class="text-sm font-black text-slate-700 mb-2 flex items-center gap-2"><i data-lucide="info" class="w-5 h-5 text-indigo-500"></i> AI Insight</p>
-                                        <p class="text-sm text-slate-600 leading-relaxed">
-                                            ${costPerHour > 50000 ? "Wow, gaya hidup Anda cukup premium minggu ini. Coba evaluasi kembali pengeluaran yang tidak esensial untuk menjaga *cash flow*." : costPerHour > 10000 ? "Gaya hidup Anda terbilang standar. Jaga keseimbangan antara pendapatan dan konsumsi untuk kestabilan jangka panjang." : "Luar biasa! Anda hidup dengan sangat hemat dan efisien minggu ini. Pertahankan jika ini selaras dengan tujuan finansial Anda."}
-                                        </p>
+                                    <p class="text-sm font-black text-slate-700 mb-2 flex items-center gap-2"><i data-lucide="info" class="w-5 h-5 text-indigo-500"></i> AI Insight</p>
+                                    <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                                        ${costPerHour > 50000 ? "Gaya hidup Anda cukup premium minggu ini. Evaluasi pengeluaran non-esensial." : costPerHour > 10000 ? "Gaya hidup Anda terbilang standar. Jaga keseimbangan pendapatan dan konsumsi." : "Luar biasa! Anda hidup dengan sangat hemat dan efisien minggu ini."}
+                                    </p>
+                                    <div class="pt-4 border-t border-slate-100">
+                                        <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1.5 flex items-center gap-1.5"><i data-lucide="radar" class="w-3 h-3"></i> Proyeksi Akhir Bulan</p>
+                                        <p class="text-sm text-slate-700 leading-relaxed">${predictionMsg}</p>
                                     </div>
+                                </div>
                                 </div>
                             </div>
                         `;
@@ -2644,6 +2739,25 @@
                         const sets = await DBEngine.getAll('settings');
                         sets.forEach(s => AppState.settings[s.key] = s.value);
 
+                
+
+                        // 👉 KODE TAMBAHAN: Validasi Keamanan Character Stats
+                        if (!AppState.settings.characterStats) {
+                            AppState.settings.characterStats = {
+                                focus: { level: 1, exp: 0 }, discipline: { level: 1, exp: 0 },
+                                growth: { level: 1, exp: 0 }, health: { level: 1, exp: 0 },
+                                social: { level: 1, exp: 0 }, balance: { level: 1, exp: 0 }
+                            };
+                        } else {
+                            // Pastikan semua key ada (buat jaga-jaga kalau ada update kategori baru)
+                            Object.keys(STATS_CONFIG).forEach(key => {
+                                if (!AppState.settings.characterStats[key]) {
+                                    AppState.settings.characterStats[key] = { level: 1, exp: 0 };
+                                }
+                            });
+                        }
+                        // 👉 AKHIR KODE TAMBAHAN
+
                         // Load Data
                         const exps = await DBEngine.getAll('expenses');
                         const acts = await DBEngine.getAll('activities');
@@ -2689,6 +2803,13 @@
                 },
 
                 render: async () => {
+
+                    Object.keys(AppState.activeCharts).forEach(key => {
+                        if (AppState.activeCharts[key]) {
+                            AppState.activeCharts[key].destroy();
+                        }
+                    });
+                    AppState.activeCharts = {};
                     const content = document.getElementById('app-content');
                     
                     // Pre-render checks
@@ -2892,11 +3013,15 @@
             
                 // --- DELEGATED GLOBAL ACTIONS ---
                 
-                switchTab: (tabId) => {
-                    AppState.activeTab = tabId;
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    App.render();
-                },
+            switchTab: (tabId) => {
+                AppState.activeTab = tabId;
+                
+                // 👉 KODE TAMBAHAN: Reset state edit pas ganti menu
+                AppState.editState = { moneyId: null, timeId: null };
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                App.render();
+},
 
                 changePage: (type, dir) => {
                     if(type === 'money') AppState.pagination.moneyPage += dir;
@@ -3411,49 +3536,35 @@
          * ==========================================
          */
         const setupSingleFilePWA = () => {
-            // 1. Buat Manifest JSON secara dinamis
-            const manifestJSON = {
-                "name": "LifeTracker Pro",
-                "short_name": "TrackerPro",
-                "description": "Aplikasi pelacak waktu dan keuangan gamifikasi.",
-                "start_url": window.location.href.split('?')[0], // Menggunakan URL saat ini
-                "display": "standalone",
-                "background_color": "#0f172a",
-                "theme_color": "#3b82f6",
-                "icons": [
-                    {
-                        "src": "https://cdn-icons-png.flaticon.com/512/1157/1157044.png",
-                        "sizes": "512x512",
-                        "type": "image/png",
-                        "purpose": "any maskable"
-                    }
-                ]
-            };
-            
-            // Ubah JSON jadi file Blob dan tempelkan ke tag <link> di head
-            const manifestBlob = new Blob([JSON.stringify(manifestJSON)], { type: 'application/json' });
-            document.getElementById('dynamic-manifest').href = URL.createObjectURL(manifestBlob);
+    // 1. Manifest JSON dinamis (Ini masih aman di beberapa browser)
+    const manifestJSON = {
+        "name": "LifeTracker Pro",
+        "short_name": "TrackerPro",
+        "description": "Aplikasi pelacak waktu dan keuangan gamifikasi.",
+        "start_url": window.location.href.split('?')[0],
+        "display": "standalone",
+        "background_color": "#0f172a",
+        "theme_color": "#3b82f6",
+        "icons": [{
+            "src": "https://cdn-icons-png.flaticon.com/512/1157/1157044.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }]
+    };
+    
+    const manifestBlob = new Blob([JSON.stringify(manifestJSON)], { type: 'application/json' });
+    document.getElementById('dynamic-manifest').href = URL.createObjectURL(manifestBlob);
 
-            // 2. Buat Service Worker secara dinamis
-            if ('serviceWorker' in navigator) {
-                const swCode = `
-                    self.addEventListener('install', e => self.skipWaiting());
-                    self.addEventListener('activate', e => self.clients.claim());
-                    self.addEventListener('fetch', e => {
-                        e.respondWith(fetch(e.request).catch(() => new Response('LifeTracker Offline Mode')));
-                    });
-                `;
-                
-                // Ubah teks JS jadi file Blob Service Worker
-                const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(swBlob);
-                
-                // Daftarkan Service Worker virtual
-                navigator.serviceWorker.register(swUrl)
-                    .then(() => console.log('Single-file PWA Service Worker Ready!'))
-                    .catch(err => console.error('PWA SW Error:', err));
-            }
-        };
+    // 2. Registrasi Service Worker yang aman
+    if ('serviceWorker' in navigator) {
+        // Alih-alih pakai Blob, kita arahkan ke file sw.js eksternal. 
+        // Kalau file nggak ada, dia cuma gagal diam-diam tanpa ngerusak UI.
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('Service Worker Ready! Offline mode active.'))
+            .catch(() => console.log('Info: Mode offline PWA dimatikan (Butuh file sw.js eksternal).'));
+    }
+};
 
         // Jalankan pembuat PWA virtual
         setupSingleFilePWA();
